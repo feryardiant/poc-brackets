@@ -1,0 +1,11 @@
+{
+  "name": "knockout-chart",
+  "version": "0.0.0",
+  "description": "Knockout Chart",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
+  "license": "MIT"
+}

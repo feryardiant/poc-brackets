@@ -1,0 +1,134 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 960px;
+    margin: 0 auto;
+}
+
+#chart {
+    display: flex;
+}
+
+#chart h3 {
+    margin: 0;
+    padding: 0;
+}
+
+.rounds, .matches {
+    display: flex;
+    flex-direction: column;
+}
+
+.rounds {
+    gap: 1rem;
+    padding: 0 1em 0 1.4em;
+    border-left: 2px dashed lightgrey;
+}
+
+.rounds:first-child {
+    border-left-width: 0;
+}
+
+.matches {
+    gap: var(--gap);
+}
+
+.match {
+    --width: 200px;
+    box-sizing: border-box;
+    border: 2px solid grey;
+    border-radius: .4rem;
+    margin: var(--margin) 0;
+    padding: 0;
+    position: relative;
+    width: var(--width);
+    background-color: white;
+    z-index: 3;
+}
+
+.match > * {
+    margin: 0;
+    padding: 0;
+    line-height: 1em;
+}
+
+.match:not(.final-round):before,
+.match:not(.final-round):after {
+    --middle: calc(50% - (var(--height) / 2));
+    content: '';
+    position: absolute;
+}
+
+.match:not(.final-round):before {
+    --height: 8px;
+    width: 8px;
+    top: calc(50% - (var(--height) / 2));
+    right: -4px;
+    background-color: grey;
+    border-radius: 50%;
+    height: var(--height);
+    z-index: 2;
+}
+
+.match:not(.final-round):after {
+    --height: 70px;
+    --line: calc(3em + (var(--width) / 3));
+    width: var(--line);
+    height: calc(var(--margin, 0) + var(--height));
+    right: calc(var(--line) * -1);
+    border: 0 solid grey;
+    border-right-width: 2px;
+    border-radius: 5px;
+}
+
+.match:nth-child(odd):after {
+    top: calc(50% - 1px);
+    border-color: blue;
+    border-top-width: 2px;
+    z-index: 1;
+}
+
+.match:nth-child(even):after {
+    bottom: calc(50% - 1px);
+    border-color: red;
+    border-bottom-width: 2px;
+    z-index: 1;
+}
+
+.match h4 {
+    position: absolute;
+    padding: 3px;
+    height: 1em;
+    width: 1em;
+    border: 2px solid grey;
+    text-align: center;
+    background-color: white;
+    border-radius: 50%;
+    left: -12px;
+    top: calc(50% - 12px);
+}
+
+.match div {
+    display: flex;
+    border-bottom: 1px solid #bfbfbf;
+    padding: .3em .4em .3em 1.2em;
+    list-style: none;
+    line-height: 1em;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.match [data-side=blue] {
+    color: blue;
+}
+
+.match [data-side=red] {
+    color: red;
+}
+
+.match div:last-child {
+    border-bottom-width: 0;
+}
