@@ -41,7 +41,8 @@ html, body {
     box-sizing: border-box;
     border: 2px solid grey;
     border-radius: .4rem;
-    margin: var(--margin) 0;
+    margin-top: calc(var(--margin) + (var(--span) * 70px));
+    margin-bottom: var(--margin);
     padding: 0;
     position: relative;
     width: var(--width);
@@ -75,7 +76,7 @@ html, body {
 
 .match:not(.final-round):after {
     --height: 70px;
-    --line: calc((var(--width) / 4) + (var(--width) * var(--next-round)) - (var(--width) / 2 + 1em));
+    --line: calc(var(--width) * (var(--next-round) - var(--curr-round)));
     width: var(--line);
     height: calc(var(--margin, 0) + var(--height));
     right: calc(var(--line) * -1);

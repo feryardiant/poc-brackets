@@ -6,12 +6,12 @@
  * @param {Boolean} unamed
  * @returns {Participant[]}
  */
-function generateParticipants(count, unamed) {
+function generateParties(count, unamed) {
     const participants = []
 
     for (let i = 1; i <= count; i++) {
         participants.push({
-            name: unamed === false ? `Participant ${i}` : '...'
+            name: `Participant ${i}`
         })
     }
 
@@ -20,6 +20,7 @@ function generateParticipants(count, unamed) {
 
 /**
  * @typedef {Object} Round
+ * @property {Number} id
  * @property {Match[]} matches
  * 
  * @param {number} totalParties
@@ -27,46 +28,120 @@ function generateParticipants(count, unamed) {
  */
 function generateRounds(totalParties) {
     const rounds = []
-    let nextRounds = totalParties
-    let round = 0
+    let parties = generateParties(totalParties)
+    let shouldNext = true
+    let r = 0
+    
+    while (shouldNext) {
+        /** @type {Round} round */
+        const round = { id: r + 1 }
+        const prevRound = r >= 1 ? rounds[r - 1] : null
 
-    while (nextRounds > 2) {
-        const participants = generateParticipants(nextRounds, round > 0)
+        round.matches = prevRound === null 
+            ? createMatches(parties, round.id)
+            : configureNextMatches(prevRound, round.id, (parties) => {
+                rounds[round.id] = { id: round.id + 1, matches: [], parties: parties }
+                shouldNext = false
+            })
 
-        rounds.push({
-            id: ++round,
-            count: nextRounds,
-            matches: generateMatches(participants, round, (num) => {
-                return num + rounds.reduce((sum, r) => r.matches.length + sum, 0)
-            }),
-        })
-
-        nextRounds = Math.ceil(nextRounds / 2)
+        rounds[r] = round
+        r++
     }
 
-    // console.log(rounds)
-    return rounds
+    const out = normalizeRounds(rounds)
+    console.log(out)
+
+    return out
+}
+
+function normalizeRounds(rounds) {
+    const byId = (a, b) => a.id - b.id
+    const addRound = (next) => {
+        rounds[next] = {
+            id: next + 1,
+            matches: [],
+            parties: []
+        }
+    }
+
+    rounds = rounds.reduce((rounds, round, r) => {
+        if (r === 0) return rounds
+
+        round.matches.forEach(normalizeMatches(round, rounds, addRound))
+        round.matches.sort(byId)
+        round.parties = []
+
+        rounds[r] = round
+
+        return rounds
+    }, rounds)
+
+    return rounds.map((round, r) => {
+        if (!round.parties || round.parties.length === 0) return round
+
+        const parties = round.parties.sort((a, b) => a.matchId - b.matchId)
+        round.matches = createMatches(parties, round.id, (num) => {
+            return num + rounds.at(-2).matches.at(-1).id
+        })
+
+        round.matches.forEach(normalizeMatches(round, rounds, addRound))
+        round.matches.sort(byId)
+
+        round.parties = []
+
+        return round
+    })
+}
+
+function normalizeMatches(round, rounds, addRound) {
+    return (match, m) => {
+        if (rounds[match.next] === undefined) {
+            addRound(match.next)
+        }
+
+        if (rounds[match.next].parties) {
+            rounds[match.next].parties.push({
+                matchId: match.id,
+                side: match.side,
+                name: `Winner match ${match.id}`
+            })
+        }
+
+        if (
+            [match.round, match.parties[0].round].includes(undefined) ||
+            match.round === match.parties[0].round
+        ) return
+
+        match.round = match.parties[0].round
+        match.gap = 1
+        match.side = 'red'
+        match.next += 1
+
+        rounds[match.round]?.matches.unshift(match)
+
+        round.matches.splice(m, 1)
+        round.matches[m] && (round.matches[m].gap = 1)
+    }
 }
 
 /**
  * @typedef {Object} Match
  * @property {Number} id
+ * @property {Number} next
  * @property {Number} round
  * @property {'blue'|'red'} side
  * @property {Participant[]} parties
+ * @property {Number[]} prevs
  * 
  * @param {Participant[]} participants
- * @param {Number} round
- * @param {(num: Number) => Number} cb
+ * @param {Number} roundId
+ * @param {(num: Number) => Number} fnId
  * @returns {Match[]}
  */
-function generateMatches(participants, round, cb) {
+function createMatches(participants, roundId, fnId = (num) => num) {
     let parties = []
     let matchId = 1
 
-    /**
-     * @type {Match[]} matches
-     */
     const matches = participants.reduce((matches, party, i) => {
         const id = Number(i) + 1
         const isEven = id % 2 == 0
@@ -78,38 +153,85 @@ function generateMatches(participants, round, cb) {
 
         if (isEven) {
             matches.push({
-                id: cb(matchId),
-                round,
+                id: fnId(matchId),
+                gap: 0,
+                next: roundId,
                 parties
             })
             
             parties = []
             matchId++
-
-            return matches
         }
 
         return matches
     }, [])
 
-    let chunks = createChunks(matches)
-
-    for (const chunk of chunks) {
-        for (const [side, cMatches] of Object.entries(chunk)) {
-            cMatches.forEach((match, c) => {
+    createChunks(matches).forEach((chunk) => {
+        for (const [side, chunks] of Object.entries(chunk)) {
+            chunks.forEach((match, c) => {
                 const i = matches.findIndex((m) => m.id === match.id)
-
+    
+                matches[i].round = roundId - 1
                 matches[i].side = side
+                matches[i].prevs = []
                 
-                if (cMatches.length > 1 && c > 0) {
-                    matches[i].round = matches[i].round * cMatches.length
+                if (chunks.length > 1 && c > 0) {
+                    // matches[i - 1].next = matches[i].next * chunks.length
+                    matches[i - 1].next += 1
                 }
             })
         }
+    })
+
+    return matches
+}
+
+/**
+ * @typedef {Object} Party
+ * @property {Number} round
+ * 
+ * @param {?Round} prevRound
+ * @param {Number} roundId
+ * @param {(parties: Party[]) => void} nextFn
+ * @returns {Match[]}
+ */
+function configureNextMatches(prevRound, roundId, nextFn = () => {}) {
+    const prevMatches = prevRound?.matches || []
+    /** @type {Party[]} parties */
+    const parties = []
+    let prevSide = null
+
+    for (const match of prevMatches) {
+        let round = match.next
+
+        if (prevSide === match.side) {
+            parties.push({
+                round: round + 1,
+                matchId: null,
+                side: 'red',
+                name: '...'
+            })
+        }
+
+        parties.push({
+            round,
+            matchId: match.id,
+            side: match.side,
+            name: `Winner match ${match.id}`
+        })
+
+        prevSide = match.side
     }
 
-    console.log(matches)
-    return matches
+    const nextParties = parties.filter(party => party.round === roundId)
+
+    if (nextParties.length > 0) {
+        nextFn(nextParties)
+    }
+
+    return createMatches(parties, roundId, (num) => {
+        return num + prevMatches[prevMatches.length - 1].id
+    })
 }
 
 /**
@@ -119,7 +241,7 @@ function createChunks(matches) {
     let side = matches.length
     let chunks = []
 
-    while (side > 2) {
+    while (side >= 2) {
         side = side / 2
 
         if (chunks.length === 0) {
@@ -134,7 +256,7 @@ function createChunks(matches) {
 
             tmpChunks.push(
                 createMatchSides(chunk.blue, side),
-                createMatchSides(chunk.red, side)
+                createMatchSides(chunk.red, side),
             )
         }
 
@@ -155,10 +277,17 @@ function createChunks(matches) {
  * @returns {Side}
  */
 function createMatchSides(matches, slice) {
-    return {
+    const chunk = {
         blue: matches.slice(0, slice),
         red: matches.slice(slice),
     }
+
+    if (chunk.blue.length === 1 && chunk.red.length === 2) {
+        chunk.blue.push(chunk.red[0])
+        chunk.red = chunk.red.slice(1)
+    }
+
+    return chunk
 }
 
 /**
@@ -188,13 +317,18 @@ export function init(totalParties) {
         $section.append($title)
 
         for (const match of round.matches) {
+            if (!match) continue
+
             const $match = document.createElement('div')
             const $matchTitle = document.createElement('h4')
 
             $match.setAttribute('data-match', match.id)
             $match.setAttribute('data-round', roundId)
             $match.setAttribute('data-side', match.side)
-            $match.style.setProperty('--next-round', match.round)
+            $match.setAttribute('data-span', match.gap)
+            $match.style.setProperty('--next-round', match.next)
+            $match.style.setProperty('--curr-round', roundId)
+            $match.style.setProperty('--span', match.gap)
             $match.classList.add('match')
 
             if (roundId > 0) {
@@ -239,6 +373,7 @@ export function init(totalParties) {
     
     for (const $genMatch of $genMatches) {
         let matchRound = Number($genMatch.getAttribute('data-round'))
+        let matchSpan = Number($genMatch.getAttribute('data-span'))
         
         if (matchRound > 1) {
             matchRound *= matchRound
@@ -249,7 +384,7 @@ export function init(totalParties) {
         const gap = (matchGap * matchRound) - matchRound
         const boxMargin = ((boxHeight * matchRound) + gap) / 2
         
-        $genMatch.style.setProperty('--margin', `${boxMargin}px`)
+        $genMatch.style.setProperty('--margin', `${Math.round(boxMargin)}px`)
         
         // console.log(matchRound)
     }
