@@ -75,7 +75,7 @@ html, body {
 
 .match:not(.final-round):after {
     --height: 70px;
-    --line: calc(3em + (var(--width) / 3));
+    --line: calc((var(--width) / 4) + (var(--width) * var(--next-round)) - (var(--width) / 2 + 1em));
     width: var(--line);
     height: calc(var(--margin, 0) + var(--height));
     right: calc(var(--line) * -1);
@@ -84,14 +84,14 @@ html, body {
     border-radius: 5px;
 }
 
-.match:nth-child(odd):after {
+.match[data-side=blue]:after {
     top: calc(50% - 1px);
     border-color: blue;
     border-top-width: 2px;
     z-index: 1;
 }
 
-.match:nth-child(even):after {
+.match[data-side=red]:after {
     bottom: calc(50% - 1px);
     border-color: red;
     border-bottom-width: 2px;

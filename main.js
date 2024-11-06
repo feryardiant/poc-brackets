@@ -44,7 +44,7 @@ function generateRounds(totalParties) {
         nextRounds = Math.ceil(nextRounds / 2)
     }
 
-    console.log(rounds)
+    // console.log(rounds)
     return rounds
 }
 
@@ -52,6 +52,7 @@ function generateRounds(totalParties) {
  * @typedef {Object} Match
  * @property {Number} id
  * @property {Number} round
+ * @property {'blue'|'red'} side
  * @property {Participant[]} parties
  * 
  * @param {Participant[]} participants
@@ -91,7 +92,73 @@ function generateMatches(participants, round, cb) {
         return matches
     }, [])
 
+    let chunks = createChunks(matches)
+
+    for (const chunk of chunks) {
+        for (const [side, cMatches] of Object.entries(chunk)) {
+            cMatches.forEach((match, c) => {
+                const i = matches.findIndex((m) => m.id === match.id)
+
+                matches[i].side = side
+                
+                if (cMatches.length > 1 && c > 0) {
+                    matches[i].round = matches[i].round * cMatches.length
+                }
+            })
+        }
+    }
+
+    console.log(matches)
     return matches
+}
+
+/**
+ * @param {Match[]} matches 
+ */
+function createChunks(matches) {
+    let side = matches.length
+    let chunks = []
+
+    while (side > 2) {
+        side = side / 2
+
+        if (chunks.length === 0) {
+            chunks.push(createMatchSides(matches, side))
+            
+            continue
+        }
+        
+        const tmpChunks = []
+        for (const i in chunks) {
+            const chunk = chunks[i]
+
+            tmpChunks.push(
+                createMatchSides(chunk.blue, side),
+                createMatchSides(chunk.red, side)
+            )
+        }
+
+        chunks = []
+        chunks.push(...tmpChunks)
+    }
+
+    return chunks
+}
+
+/**
+ * @typedef {Object} Side
+ * @property {Match[]} blue
+ * @property {Match[]} red
+ * 
+ * @param {Match[]} matches 
+ * @param {Number} slice 
+ * @returns {Side}
+ */
+function createMatchSides(matches, slice) {
+    return {
+        blue: matches.slice(0, slice),
+        red: matches.slice(slice),
+    }
 }
 
 /**
@@ -126,6 +193,8 @@ export function init(totalParties) {
 
             $match.setAttribute('data-match', match.id)
             $match.setAttribute('data-round', roundId)
+            $match.setAttribute('data-side', match.side)
+            $match.style.setProperty('--next-round', match.round)
             $match.classList.add('match')
 
             if (roundId > 0) {
