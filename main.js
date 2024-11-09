@@ -1,6 +1,7 @@
 /**
  * @typedef {Object} Participant
  * @property {String} name
+ * @property {String} continent
  * 
  * @param {Number} count
  * @param {Boolean} unamed
@@ -11,7 +12,8 @@ function generateParties(count, unamed) {
 
     for (let i = 1; i <= count; i++) {
         participants.push({
-            name: `Participant ${i}`
+            name: `Participant ${i}`,
+            continent: `Continent ${i}`,
         })
     }
 
@@ -27,7 +29,7 @@ function generateParties(count, unamed) {
  * @returns {Round[]}
  */
 function generateRounds(totalParties) {
-    const rounds = []
+    let rounds = []
     let parties = generateParties(totalParties)
     let shouldNext = true
     let r = 0
@@ -41,21 +43,28 @@ function generateRounds(totalParties) {
             ? createMatches(parties, round.id)
             : configureNextMatches(prevRound, round.id, (parties) => {
                 rounds[round.id] = { id: round.id + 1, matches: [], parties: parties }
-                shouldNext = false
+                
             })
-
+            
         rounds[r] = round
+        rounds = normalizeRounds(rounds)
+        shouldNext = rounds.at(-1).matches?.length > 0
+
         r++
     }
 
-    const out = normalizeRounds(rounds)
-    console.log(out)
-
-    return out
+    return rounds
 }
 
+/**
+ * @param {Round[]} rounds 
+ * @returns {Round[]}
+ */
 function normalizeRounds(rounds) {
     const byId = (a, b) => a.id - b.id
+    /**
+     * @param {Numbwe} next 
+     */
     const addRound = (next) => {
         rounds[next] = {
             id: next + 1,
@@ -76,29 +85,39 @@ function normalizeRounds(rounds) {
         return rounds
     }, rounds)
 
-    return rounds.map((round, r) => {
-        if (!round.parties || round.parties.length === 0) return round
+    return rounds
+    // return rounds.map((round, r) => {
+    //     if (!round.parties || round.parties.length === 0) return round
 
-        const parties = round.parties.sort((a, b) => a.matchId - b.matchId)
-        round.matches = createMatches(parties, round.id, (num) => {
-            return num + rounds.at(-2).matches.at(-1).id
-        })
+    //     const parties = round.parties.sort((a, b) => a.matchId - b.matchId)
+    //     round.matches = createMatches(parties, round.id, (num) => {
+    //         return num + rounds.at(-2).matches.at(-1).id
+    //     })
 
-        round.matches.forEach(normalizeMatches(round, rounds, addRound))
-        round.matches.sort(byId)
+    //     round.matches.forEach(normalizeMatches(round, rounds, addRound))
+    //     round.matches.sort(byId)
 
-        round.parties = []
+    //     round.parties = []
 
-        return round
-    })
+    //     return round
+    // })
 }
 
+/**
+ * @param {Round} round 
+ * @param {Round[]} rounds 
+ * @param {(Number) => void} addRound 
+ * @returns {(match: Match, m: Number) => void}
+ */
 function normalizeMatches(round, rounds, addRound) {
     return (match, m) => {
+        // Create new round when theres match need an undefine rounds
         if (rounds[match.next] === undefined) {
             addRound(match.next)
         }
 
+        // If theres undefined or empty parties on next round,
+        // create new party based on previous match winner
         if (rounds[match.next].parties) {
             rounds[match.next].parties.push({
                 matchId: match.id,
@@ -107,6 +126,9 @@ function normalizeMatches(round, rounds, addRound) {
             })
         }
 
+        // If there's match that has no round assigned and 
+        // target round of first party on the current match is equal
+        // Skip it!
         if (
             [match.round, match.parties[0].round].includes(undefined) ||
             match.round === match.parties[0].round
