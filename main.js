@@ -93,7 +93,7 @@ function generateRounds(totalParties) {
             id: r + 1,
             parties: r === 0
                 ? generateParties(totalParties)
-                : rounds.slice(0, r).reduce((parties, round) => {
+                : rounds.slice(0, r - 1).reduce((parties, round) => {
                     round.matches.forEach((match) => {
                         if (rounds[match.next] === undefined) {
                             rounds[match.next] = createEmptyRound(match.next)
@@ -119,12 +119,14 @@ function generateRounds(totalParties) {
                 ])
         }
 
-        round.matches = createMatches(round.parties, round.id, (num) => {
-            return num + (prevMatches[prevMatches.length - 1]?.id || 0)
-        })
+        round.matches = round.parties.length > 1
+            ? createMatches(round.parties, round.id, (num) => {
+                return num + (prevMatches[prevMatches.length - 1]?.id || 0)
+            })
+            : []
             
         rounds[r] = round
-        shouldNext = round.parties.length > 2
+        shouldNext = round.matches.length > 0
 
         r++
     }
@@ -188,6 +190,19 @@ function createMatches(participants, roundId, fnId = (num) => num) {
 
         return matches
     }, [])
+
+    // On first round, if there's a party that haven't assigned to match
+    // Create a special game for them to match with winner from prev match
+    if (roundId === 1 && (participants.length - (matches.length * 2) === 1)) {
+        matches.push({
+            id: fnId(matchId),
+            gap: 0,
+            next: roundId,
+            parties: [
+                { side: 'blue', ...participants.at(-1) }
+            ]
+        })
+    }
 
     createChunks(matches).forEach((chunk) => {
         for (const [side, chunks] of Object.entries(chunk)) {
@@ -329,6 +344,7 @@ export function init($chart, totalParties) {
             }
             
             const $matchInner = document.createElement('div')
+            const isVersus = match.parties.length === 2
 
             $matchInner.id = `round-${roundId}-match-${match.id}`
             $matchInner.classList.add('match-inner')
@@ -344,17 +360,21 @@ export function init($chart, totalParties) {
                 $participant.setAttribute('data-side', party.side)
 
                 const $name = document.createElement('label')
-                const $check = document.createElement('input')
 
-                $check.type = 'radio'
-                $check.name = $matchInner.id
-                $check.id = `${$matchInner.id}-${party.side}`
-                $check.value = party.side
-
-                $name.setAttribute('for', $check.id)
                 $name.innerText = party.name
+                $participant.append($name)
 
-                $participant.append($name, $check)
+                if (isVersus) {
+                    const $check = document.createElement('input')
+    
+                    $check.type = 'radio'
+                    $check.name = $matchInner.id
+                    $check.id = `${$matchInner.id}-${party.side}`
+                    $check.value = party.side
+    
+                    $name.setAttribute('for', $check.id)
+                    $participant.append($check)
+                }
 
                 $matchInner.append($participant)
             }

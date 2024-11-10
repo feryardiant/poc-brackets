@@ -1,6 +1,7 @@
 html, body {
     margin: 0;
     padding: 0;
+    font-size: 16px;
 }
 
 .container {
@@ -43,6 +44,7 @@ header {
 }
 
 .rounds {
+    --width: 180px;
     gap: 1em;
     padding: 0 1em 0 1.4em;
     border-left: 2px dashed lightgrey;
@@ -57,10 +59,10 @@ header {
     gap: var(--gap, 0);
     grid-template: repeat(var(--grid), 1fr);
     height: 100%;
+    min-width: var(--width);
 }
 
 .match {
-    --width: 180px;
     --inner-width: calc(var(--width) + 4px + 2em);
     box-sizing: border-box;
     margin-top: calc(var(--span) * (var(--height) + 2em));
@@ -132,8 +134,8 @@ header {
     text-align: center;
     background-color: white;
     border-radius: 50%;
-    left: -12px;
-    top: calc(50% - 12px);
+    left: -11px;
+    top: calc(50% - 13px);
 }
 
 .match-inner div {
