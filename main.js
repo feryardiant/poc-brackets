@@ -24,126 +24,113 @@ function generateParties(count, unamed) {
  * @typedef {Object} Round
  * @property {Number} id
  * @property {Match[]} matches
+ * @property {Party[]} parties
  * 
+ * @param {Number} index 
+ * @returns {Round}
+ */
+function createEmptyRound(index) {
+    return {
+        id: index + 1,
+        matches: [],
+        parties: []
+    }
+}
+
+/**
+ * @typedef {Participant} Party
+ * @property {Number} round
+ * @property {Number} matchId
+ * @property {'blue'|'red'} side
+ * 
+ * @param {Match[]} prevs 
+ * @returns {(match: Match) => Party}
+ */
+function matchWinnerAsNextParty(prevs) {
+    return (match) => {
+        /** @type {Party} */
+        const party = {
+            round: match.next,
+            matchId: match.id,
+            side: match.side,
+            name: `Winner match ${match.id}`,
+            prev: {
+                round: match.round,
+                gap: match.gap,
+            }
+        }
+
+        if (prevs.length > 0) {
+            for (const pt of match.parties) {
+                const prevMatch = prevs.find((m) => m.id === pt.matchId)
+
+                if (prevMatch === undefined || prevMatch.gap === 0 || prevMatch.gap > party.prev.gap) continue
+                
+                party.prev.gap -= prevMatch.gap
+            }
+        }
+
+        return party
+    }
+}
+
+/**
  * @param {number} totalParties
  * @returns {Round[]}
  */
 function generateRounds(totalParties) {
+    /** @type {Round[]} */
     let rounds = []
-    let parties = generateParties(totalParties)
     let shouldNext = true
     let r = 0
     
     while (shouldNext) {
-        /** @type {Round} round */
-        const round = { id: r + 1 }
         const prevRound = r >= 1 ? rounds[r - 1] : null
+        const prevMatches = prevRound?.matches || []
 
-        round.matches = prevRound === null 
-            ? createMatches(parties, round.id)
-            : configureNextMatches(prevRound, round.id, (parties) => {
-                rounds[round.id] = { id: round.id + 1, matches: [], parties: parties }
-                
-            })
+        /** @type {Round} round */
+        const round = {
+            id: r + 1,
+            parties: r === 0
+                ? generateParties(totalParties)
+                : rounds.slice(0, r).reduce((parties, round) => {
+                    round.matches.forEach((match) => {
+                        if (rounds[match.next] === undefined) {
+                            rounds[match.next] = createEmptyRound(match.next)
+                        }
+                    })
+
+                    parties.forEach((party, p) => {
+                        if (!party.round) return
+
+                        if (rounds[party.round] === undefined) {
+                            rounds[party.round] = createEmptyRound(party.round)
+                        }
+
+                        if (rounds[party.round].parties.find(pt => pt.matchId === party.matchId) === undefined) {
+                            rounds[party.round].parties.push(party)
+                        }
+                    })
+
+                    return parties.filter((party) => party.round === r)
+                }, [
+                    ...(rounds[r]?.parties || []),
+                    ...prevMatches.map(matchWinnerAsNextParty(rounds[r - 2]?.matches || []))
+                ])
+        }
+
+        round.matches = createMatches(round.parties, round.id, (num) => {
+            return num + (prevMatches[prevMatches.length - 1]?.id || 0)
+        })
             
         rounds[r] = round
-        rounds = normalizeRounds(rounds)
-        shouldNext = rounds.at(-1).matches?.length > 0
+        shouldNext = round.parties.length > 2
 
         r++
     }
 
+    console.log(rounds)
     return rounds
-}
-
-/**
- * @param {Round[]} rounds 
- * @returns {Round[]}
- */
-function normalizeRounds(rounds) {
-    const byId = (a, b) => a.id - b.id
-    /**
-     * @param {Numbwe} next 
-     */
-    const addRound = (next) => {
-        rounds[next] = {
-            id: next + 1,
-            matches: [],
-            parties: []
-        }
-    }
-
-    rounds = rounds.reduce((rounds, round, r) => {
-        if (r === 0) return rounds
-
-        round.matches.forEach(normalizeMatches(round, rounds, addRound))
-        round.matches.sort(byId)
-        round.parties = []
-
-        rounds[r] = round
-
-        return rounds
-    }, rounds)
-
-    return rounds
-    // return rounds.map((round, r) => {
-    //     if (!round.parties || round.parties.length === 0) return round
-
-    //     const parties = round.parties.sort((a, b) => a.matchId - b.matchId)
-    //     round.matches = createMatches(parties, round.id, (num) => {
-    //         return num + rounds.at(-2).matches.at(-1).id
-    //     })
-
-    //     round.matches.forEach(normalizeMatches(round, rounds, addRound))
-    //     round.matches.sort(byId)
-
-    //     round.parties = []
-
-    //     return round
-    // })
-}
-
-/**
- * @param {Round} round 
- * @param {Round[]} rounds 
- * @param {(Number) => void} addRound 
- * @returns {(match: Match, m: Number) => void}
- */
-function normalizeMatches(round, rounds, addRound) {
-    return (match, m) => {
-        // Create new round when theres match need an undefine rounds
-        if (rounds[match.next] === undefined) {
-            addRound(match.next)
-        }
-
-        // If theres undefined or empty parties on next round,
-        // create new party based on previous match winner
-        if (rounds[match.next].parties) {
-            rounds[match.next].parties.push({
-                matchId: match.id,
-                side: match.side,
-                name: `Winner match ${match.id}`
-            })
-        }
-
-        // If there's match that has no round assigned and 
-        // target round of first party on the current match is equal
-        // Skip it!
-        if (
-            [match.round, match.parties[0].round].includes(undefined) ||
-            match.round === match.parties[0].round
-        ) return
-
-        match.round = match.parties[0].round
-        match.gap = 1
-        match.side = 'red'
-        match.next += 1
-
-        rounds[match.round]?.matches.unshift(match)
-
-        round.matches.splice(m, 1)
-        round.matches[m] && (round.matches[m].gap = 1)
-    }
 }
 
 /**
@@ -161,9 +148,21 @@ function normalizeMatches(round, rounds, addRound) {
  * @returns {Match[]}
  */
 function createMatches(participants, roundId, fnId = (num) => num) {
+    /** @type {Party[]} */
     let parties = []
     let matchId = 1
 
+    for (let pt in participants) {
+        pt = Number(pt)
+
+        if (roundId <= 2 || (pt < 1 || pt >= participants.length - 1)) continue
+
+        if (participants[pt].side === participants[pt - 1].side) {
+            participants[pt] = participants.splice(pt + 1, 1, participants[pt])[0]
+        }
+    }
+
+    /** @type {Match[]} */
     const matches = participants.reduce((matches, party, i) => {
         const id = Number(i) + 1
         const isEven = id % 2 == 0
@@ -176,7 +175,9 @@ function createMatches(participants, roundId, fnId = (num) => num) {
         if (isEven) {
             matches.push({
                 id: fnId(matchId),
-                gap: 0,
+                gap: parties.reduce((gap, party) => {
+                    return gap + (party.prev?.gap || 0)
+                }, 0),
                 next: roundId,
                 parties
             })
@@ -191,69 +192,33 @@ function createMatches(participants, roundId, fnId = (num) => num) {
     createChunks(matches).forEach((chunk) => {
         for (const [side, chunks] of Object.entries(chunk)) {
             chunks.forEach((match, c) => {
-                const i = matches.findIndex((m) => m.id === match.id)
+                const m = matches.findIndex((m) => m.id === match.id)
     
-                matches[i].round = roundId - 1
-                matches[i].side = side
-                matches[i].prevs = []
+                matches[m].round = roundId - 1
+                matches[m].side = matches[m].gap > 0
+                    ? (matches[m].gap % 2 === 0 ? 'blue' : 'red')
+                    : side
                 
                 if (chunks.length > 1 && c > 0) {
-                    // matches[i - 1].next = matches[i].next * chunks.length
-                    matches[i - 1].next += 1
+                    matches[m - 1].next += 1
+                }
+
+                if (m > 0) {
+                    const gap = matches[m].parties[0].matchId - matches[m - 1].parties[1].matchId - 1 || 0
+
+                    if (gap > 0) {
+                        matches[m].gap = gap
+                    }
+
+                    if (matches[m].gap > 0) {
+                        matches[m - 1].next += (1 - matches[m - 1].gap)
+                    }
                 }
             })
         }
     })
 
     return matches
-}
-
-/**
- * @typedef {Object} Party
- * @property {Number} round
- * 
- * @param {?Round} prevRound
- * @param {Number} roundId
- * @param {(parties: Party[]) => void} nextFn
- * @returns {Match[]}
- */
-function configureNextMatches(prevRound, roundId, nextFn = () => {}) {
-    const prevMatches = prevRound?.matches || []
-    /** @type {Party[]} parties */
-    const parties = []
-    let prevSide = null
-
-    for (const match of prevMatches) {
-        let round = match.next
-
-        if (prevSide === match.side) {
-            parties.push({
-                round: round + 1,
-                matchId: null,
-                side: 'red',
-                name: '...'
-            })
-        }
-
-        parties.push({
-            round,
-            matchId: match.id,
-            side: match.side,
-            name: `Winner match ${match.id}`
-        })
-
-        prevSide = match.side
-    }
-
-    const nextParties = parties.filter(party => party.round === roundId)
-
-    if (nextParties.length > 0) {
-        nextFn(nextParties)
-    }
-
-    return createMatches(parties, roundId, (num) => {
-        return num + prevMatches[prevMatches.length - 1].id
-    })
 }
 
 /**
@@ -313,15 +278,16 @@ function createMatchSides(matches, slice) {
 }
 
 /**
+ * @param {HTMLDivElement} $chart
  * @param {Number} totalParties
  */
-export function init(totalParties) {
+export function init($chart, totalParties) {
     const rounds = generateRounds(totalParties)
     const matchGap = 30
     
-    const $chart = document.getElementById('chart')
-
+    $chart.innerHTML = ''
     $chart.style.setProperty('--participants', `${totalParties}`)
+    $chart.style.setProperty('--height', '62px')
 
     for (const roundId in rounds) {
         const round = rounds[roundId]
@@ -332,9 +298,13 @@ export function init(totalParties) {
 
         $section.id = `round-${roundId}`
         $title.innerText = `Round ${roundId}`
+        
         $section.classList.add('rounds')
+        $section.style.setProperty('--curr-round', roundId)
+        
         $matches.classList.add('matches')
         $matches.style.setProperty('--gap', `${matchGap}px`)
+        $matches.style.setProperty('--grid', round.matches.length)
 
         $section.append($title)
 
@@ -342,14 +312,11 @@ export function init(totalParties) {
             if (!match) continue
 
             const $match = document.createElement('div')
-            const $matchTitle = document.createElement('h4')
 
             $match.setAttribute('data-match', match.id)
-            $match.setAttribute('data-round', roundId)
-            $match.setAttribute('data-side', match.side)
-            $match.setAttribute('data-span', match.gap)
+            match.side && $match.setAttribute('data-side', match.side)
+
             $match.style.setProperty('--next-round', match.next)
-            $match.style.setProperty('--curr-round', roundId)
             $match.style.setProperty('--span', match.gap)
             $match.classList.add('match')
 
@@ -360,54 +327,43 @@ export function init(totalParties) {
                     $match.classList.add('final-round')
                 }
             }
+            
+            const $matchInner = document.createElement('div')
 
+            $matchInner.id = `round-${roundId}-match-${match.id}`
+            $matchInner.classList.add('match-inner')
+
+            const $matchTitle = document.createElement('h4')
             $matchTitle.innerText = match.id
 
             $match.append($matchTitle)
 
             for (const party of match.parties) {
                 const $participant = document.createElement('div')
+
+                $participant.setAttribute('data-side', party.side)
+
                 const $name = document.createElement('label')
                 const $check = document.createElement('input')
 
-                $check.type = 'checkbox'
-                $check.name = $check.id = [
-                    roundId,
-                    party.name.toLowerCase().replace(' ', '-')
-                ].join('-')
+                $check.type = 'radio'
+                $check.name = $matchInner.id
+                $check.id = `${$matchInner.id}-${party.side}`
+                $check.value = party.side
 
                 $name.setAttribute('for', $check.id)
                 $name.innerText = party.name
-                $participant.setAttribute('data-side', party.side)
+
                 $participant.append($name, $check)
 
-                $match.append($participant)
+                $matchInner.append($participant)
             }
 
+            $match.append($matchInner)
             $matches.append($match)
         }
         
         $section.append($matches)
         $chart.append($section)
-    }
-
-    const $genMatches = document.getElementsByClassName('match')
-    
-    for (const $genMatch of $genMatches) {
-        let matchRound = Number($genMatch.getAttribute('data-round'))
-        let matchSpan = Number($genMatch.getAttribute('data-span'))
-        
-        if (matchRound > 1) {
-            matchRound *= matchRound
-            matchRound -= 1
-        }
-
-        const boxHeight = $genMatch.getBoundingClientRect().height
-        const gap = (matchGap * matchRound) - matchRound
-        const boxMargin = ((boxHeight * matchRound) + gap) / 2
-        
-        $genMatch.style.setProperty('--margin', `${Math.round(boxMargin)}px`)
-        
-        // console.log(matchRound)
     }
 }

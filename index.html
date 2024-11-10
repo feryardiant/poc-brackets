@@ -5,17 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Knockout Chart</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module">
-        import { init } from "./main.js";
-
-        init(20)
-    </script>
 </head>
 <body>
     <header class="container">
         <h1>Knockout Chart</h1>
+
+        <div id="slider">
+            <label for="">Generate</label>
+            <input type="range" name="range" min="2" max="50" value="2">
+            <span id="value"></span>
+            <span>participants</span>
+        </div>
     </header>
 
     <main id="chart" class="container"></main>
+
+    <script type="module">
+        import { init } from "./main.js";
+
+        const $range = document.getElementsByName('range')[0]
+        const $value = document.getElementById('value')
+        const $form = document.getElementById('form')
+        const $chart = document.getElementById('chart')
+
+        $range.addEventListener('change', (e) => {
+            $value.innerText = e.target.value
+            init($chart, e.target.value)
+        })
+        
+        $value.innerText = $range.value
+        init($chart, $range.value)
+    </script>
 </body>
 </html>
