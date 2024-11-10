@@ -71,6 +71,7 @@ header {
     display: flex;
     align-items: center;
     isolation: isolate;
+    min-height: calc(var(--height) + 2px);
 }
 
 .match-inner {

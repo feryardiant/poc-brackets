@@ -93,7 +93,7 @@ function generateRounds(totalParties) {
             id: r + 1,
             parties: r === 0
                 ? generateParties(totalParties)
-                : rounds.slice(0, r - 1).reduce((parties, round) => {
+                : rounds.slice(0, r).reduce((parties, round) => {
                     round.matches.forEach((match) => {
                         if (rounds[match.next] === undefined) {
                             rounds[match.next] = createEmptyRound(match.next)
@@ -125,8 +125,11 @@ function generateRounds(totalParties) {
             })
             : []
             
-        rounds[r] = round
         shouldNext = round.matches.length > 0
+
+        if (shouldNext) {
+            rounds[r] = round
+        }
 
         r++
     }
@@ -299,10 +302,12 @@ function createMatchSides(matches, slice) {
 export function init($chart, totalParties) {
     const rounds = generateRounds(totalParties)
     const matchGap = 30
+    const matchHeight = 62
     
     $chart.innerHTML = ''
     $chart.style.setProperty('--participants', `${totalParties}`)
-    $chart.style.setProperty('--height', '62px')
+    $chart.style.setProperty('--height', `${matchHeight}px`)
+    $chart.style.setProperty('--gap', `${matchGap}px`)
 
     for (const roundId in rounds) {
         const round = rounds[roundId]
@@ -318,7 +323,6 @@ export function init($chart, totalParties) {
         $section.style.setProperty('--curr-round', roundId)
         
         $matches.classList.add('matches')
-        $matches.style.setProperty('--gap', `${matchGap}px`)
         $matches.style.setProperty('--grid', round.matches.length)
 
         $section.append($title)
