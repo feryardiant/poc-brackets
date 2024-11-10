@@ -134,7 +134,11 @@ function generateRounds(totalParties) {
         r++
     }
 
-    console.log(rounds)
+    // Delete last round if its contains only single party
+    if (rounds.at(-1).matches.length === 0) {
+        rounds.splice(r - 1, 1)
+    }
+
     return rounds
 }
 
