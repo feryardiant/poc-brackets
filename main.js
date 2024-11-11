@@ -1,11 +1,14 @@
 /**
- * @typedef {Object} Participant
+ * @typedef {Object} Party
  * @property {String} name
  * @property {String} continent
+ * @property {Number} round
+ * @property {Number} matchId
+ * @property {'blue'|'red'} side
  * 
  * @param {Number} count
  * @param {Boolean} unamed
- * @returns {Participant[]}
+ * @returns {Party[]}
  */
 function generateParties(count, unamed) {
     const participants = []
@@ -38,11 +41,6 @@ function createEmptyRound(index) {
 }
 
 /**
- * @typedef {Participant} Party
- * @property {Number} round
- * @property {Number} matchId
- * @property {'blue'|'red'} side
- * 
  * @param {Match[]} prevs 
  * @returns {(match: Match) => Party}
  */
@@ -93,7 +91,7 @@ function generateRounds(totalParties) {
             id: r + 1,
             parties: r === 0
                 ? generateParties(totalParties)
-                : rounds.slice(0, r).reduce((parties, round) => {
+                : rounds.slice(0, r).reduce((parties, round, rnd) => {
                     round.matches.forEach((match) => {
                         if (rounds[match.next] === undefined) {
                             rounds[match.next] = createEmptyRound(match.next)
@@ -124,7 +122,7 @@ function generateRounds(totalParties) {
                 return num + (prevMatches[prevMatches.length - 1]?.id || 0)
             })
             : []
-            
+
         shouldNext = round.matches.length > 0
 
         if (shouldNext) {
@@ -135,10 +133,11 @@ function generateRounds(totalParties) {
     }
 
     // Delete last round if its contains only single party
-    if (rounds.at(-1).matches.length === 0) {
+    if (rounds.length > 0 && rounds.at(-1).matches.length === 0) {
         rounds.splice(r - 1, 1)
     }
 
+    console.log('rounds', rounds)
     return rounds
 }
 
@@ -148,10 +147,10 @@ function generateRounds(totalParties) {
  * @property {Number} next
  * @property {Number} round
  * @property {'blue'|'red'} side
- * @property {Participant[]} parties
+ * @property {Party[]} parties
  * @property {Number[]} prevs
  * 
- * @param {Participant[]} participants
+ * @param {Party[]} participants
  * @param {Number} roundId
  * @param {(num: Number) => Number} fnId
  * @returns {Match[]}
@@ -161,100 +160,63 @@ function createMatches(participants, roundId, fnId = (num) => num) {
     let parties = []
     let matchId = 1
 
-    for (let pt in participants) {
-        pt = Number(pt)
-
-        if (roundId <= 2 || (pt < 1 || pt >= participants.length - 1)) continue
-
-        if (participants[pt].side === participants[pt - 1].side) {
-            participants[pt] = participants.splice(pt + 1, 1, participants[pt])[0]
-        }
-    }
-
     /** @type {Match[]} */
-    const matches = participants.reduce((matches, party, i) => {
-        const id = Number(i) + 1
-        const isEven = id % 2 == 0
-
-        parties.push({
-            side: isEven ? 'red' : 'blue',
-            ...party
-        })
-
-        if (isEven) {
-            matches.push({
-                id: fnId(matchId),
-                gap: parties.reduce((gap, party) => {
-                    return gap + (party.prev?.gap || 0)
-                }, 0),
-                next: roundId,
-                parties
-            })
-            
-            parties = []
-            matchId++
+    const matches = chunkPartiesBySide(participants, roundId).reduce((matches, party, p, participants) => {
+        if (party === undefined) {
+            console.log(participants)
+            return matches
         }
+
+        const sameNextSide = party && participants[p + 1]?.side === party.side
+        const diffPrevSide = party && participants[p - 1]?.side !== party.side
+        let shouldMatched = party.side === 'blue' ? sameNextSide : diffPrevSide
+
+        parties.push(party)
+
+        if (!shouldMatched) {
+            return matches
+        }
+
+        const match = {
+            id: fnId(matchId),
+            gap: parties.reduce((gap, party) => {
+                return gap + (party.prev?.gap || 0)
+            }, 0),
+            next: party.round + 1,
+            round: party.round,
+            side: matches.length % 2 === 0 ? 'blue' : 'red',
+            parties
+        }
+
+        matches.push(match)
+
+        parties = []
+        matchId++
 
         return matches
     }, [])
 
-    // On first round, if there's a party that haven't assigned to match
-    // Create a special game for them to match with winner from prev match
-    if (roundId === 1 && (participants.length - (matches.length * 2) === 1)) {
-        matches.push({
-            id: fnId(matchId),
-            gap: 0,
-            next: roundId,
-            parties: [
-                { side: 'blue', ...participants.at(-1) }
-            ]
-        })
+    if (matches.length > 1 && matches.length % 2 > 0 && matches.at(-1).side === 'blue') {
+        matches[matches.length - 1].side = 'red'
+        matches[matches.length - 1].next += 1
     }
-
-    createChunks(matches).forEach((chunk) => {
-        for (const [side, chunks] of Object.entries(chunk)) {
-            chunks.forEach((match, c) => {
-                const m = matches.findIndex((m) => m.id === match.id)
-    
-                matches[m].round = roundId - 1
-                matches[m].side = matches[m].gap > 0
-                    ? (matches[m].gap % 2 === 0 ? 'blue' : 'red')
-                    : side
-                
-                if (chunks.length > 1 && c > 0) {
-                    matches[m - 1].next += 1
-                }
-
-                if (m > 0) {
-                    const gap = matches[m].parties[0].matchId - matches[m - 1].parties[1].matchId - 1 || 0
-
-                    if (gap > 0) {
-                        matches[m].gap = gap
-                    }
-
-                    if (matches[m].gap > 0) {
-                        matches[m - 1].next += (1 - matches[m - 1].gap)
-                    }
-                }
-            })
-        }
-    })
 
     return matches
 }
 
 /**
- * @param {Match[]} matches 
+ * @param {Party[]} parties 
+ * @param {Number} roundId
  */
-function createChunks(matches) {
-    let side = matches.length
+function chunkPartiesBySide(parties, roundId) {
+    let side = parties.length
     let chunks = []
 
     while (side >= 2) {
-        side = side / 2
+        side = Math.floor(side / 2)
 
         if (chunks.length === 0) {
-            chunks.push(createMatchSides(matches, side))
+            chunks.push(assignPartySide(parties, side))
             
             continue
         }
@@ -264,8 +226,8 @@ function createChunks(matches) {
             const chunk = chunks[i]
 
             tmpChunks.push(
-                createMatchSides(chunk.blue, side),
-                createMatchSides(chunk.red, side),
+                assignPartySide(chunk.blue, side),
+                assignPartySide(chunk.red, side),
             )
         }
 
@@ -273,27 +235,55 @@ function createChunks(matches) {
         chunks.push(...tmpChunks)
     }
 
-    return chunks
+    const returns = []
+
+    for (const chunk of chunks) {
+        for (const [side, parties] of Object.entries(chunk)) {
+            for (const party of parties) {
+                if (party.side === undefined) {
+                    party.side = side
+                }
+
+                if (side === 'red' && returns.at(-1).side === 'red') {
+                    party.side = 'blue'
+                }
+
+                party.round = roundId - 1
+
+                returns.push(party)
+            }
+        }
+    }
+
+    if (roundId > 1) {
+        returns.forEach((ret, r) => {
+            if ((r + 1) % 2 === 1 && ret.side === 'red' && returns[r + 1] !== undefined) {
+                returns[r] = returns.splice(r + 1, 1, returns[r])[0]
+            }
+        })
+    }
+
+    // console.log('ret', ...returns)
+    return returns
 }
 
 /**
  * @typedef {Object} Side
- * @property {Match[]} blue
- * @property {Match[]} red
+ * @property {Party[]} blue
+ * @property {Party[]} red
  * 
- * @param {Match[]} matches 
+ * @param {Party[]} parties 
  * @param {Number} slice 
  * @returns {Side}
  */
-function createMatchSides(matches, slice) {
-    const chunk = {
-        blue: matches.slice(0, slice),
-        red: matches.slice(slice),
+function assignPartySide(parties, slice) {
+    if (parties.length % 2 > 0 && slice > 1) {
+        slice++
     }
 
-    if (chunk.blue.length === 1 && chunk.red.length === 2) {
-        chunk.blue.push(chunk.red[0])
-        chunk.red = chunk.red.slice(1)
+    const chunk = {
+        blue: parties.slice(0, slice),
+        red: parties.slice(slice),
     }
 
     return chunk
