@@ -110,6 +110,7 @@ function generateRounds(totalParties) {
                         }
                     })
 
+                    console.log(r, rnd)
                     return parties.filter((party) => party.round === r)
                 }, [
                     ...(rounds[r]?.parties || []),
@@ -284,6 +285,11 @@ function assignPartySide(parties, slice) {
     const chunk = {
         blue: parties.slice(0, slice),
         red: parties.slice(slice),
+    }
+
+    if (chunk.blue.length === 1 && (chunk.red.length - chunk.blue.length) === 1) {
+        chunk.blue.push(chunk.red[0])
+        chunk.red = chunk.red.slice(1)
     }
 
     return chunk
