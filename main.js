@@ -110,7 +110,6 @@ function generateRounds(totalParties) {
                         }
                     })
 
-                    console.log(r, rnd)
                     return parties.filter((party) => party.round === r)
                 }, [
                     ...(rounds[r]?.parties || []),
@@ -206,30 +205,46 @@ function createMatches(participants, roundId, fnId = (num) => num) {
 }
 
 /**
+ * @typedef {Object} Chunk
+ * @property {Party[]} blue
+ * @property {Party[]} red
+ * 
  * @param {Party[]} parties 
  * @param {Number} roundId
  */
 function chunkPartiesBySide(parties, roundId) {
-    let side = parties.length
+    /** @type {Chunk[]} */
     let chunks = []
+    let side = parties.length
 
+    // Split each participants into chunked blue and red
+    // with criteria of each chunk can only consist of max 2 blues and 1 red
     while (side >= 2) {
         side = Math.floor(side / 2)
 
+        const mod = parties.length % side
+
+        if (mod !== 0 && side % 2 > 0) {
+            side += mod % 2 > 0 ? mod : 1
+        }
+        
         if (chunks.length === 0) {
             chunks.push(assignPartySide(parties, side))
             
             continue
         }
-        
-        const tmpChunks = []
-        for (const i in chunks) {
-            const chunk = chunks[i]
 
-            tmpChunks.push(
-                assignPartySide(chunk.blue, side),
-                assignPartySide(chunk.red, side),
-            )
+        // Recursively splits each sides
+        const tmpChunks = []
+
+        for (const chunk of chunks) {
+            for (const parts of Object.values(chunk)) {
+                let tmpChunk = assignPartySide(parts, side)
+
+                if (tmpChunk.blue.length > 0) {
+                    tmpChunks.push(tmpChunk)
+                }
+            }
         }
 
         chunks = []
@@ -237,21 +252,25 @@ function chunkPartiesBySide(parties, roundId) {
     }
 
     const returns = []
+    const lastChunk = chunks.at(-1)
+
+    // When last chunk's red has 0 parties,
+    // move its blue to red then move previous red as its blue
+    if (lastChunk.red.length === 0) {
+        lastChunk.red = lastChunk.blue.splice(0)
+        lastChunk.blue = chunks.at(-2).red.splice(0)
+    }
 
     for (const chunk of chunks) {
-        for (const [side, parties] of Object.entries(chunk)) {
-            for (const party of parties) {
-                if (party.side === undefined) {
-                    party.side = side
+        for (const [side, parts] of Object.entries(chunk)) {
+            for (const part of parts) {
+                if (part.side === undefined) {
+                    part.side = side
                 }
 
-                if (side === 'red' && returns.at(-1).side === 'red') {
-                    party.side = 'blue'
-                }
+                part.round = roundId - 1
 
-                party.round = roundId - 1
-
-                returns.push(party)
+                returns.push(part)
             }
         }
     }
@@ -278,10 +297,6 @@ function chunkPartiesBySide(parties, roundId) {
  * @returns {Side}
  */
 function assignPartySide(parties, slice) {
-    if (parties.length % 2 > 0 && slice > 1) {
-        slice++
-    }
-
     const chunk = {
         blue: parties.slice(0, slice),
         red: parties.slice(slice),
