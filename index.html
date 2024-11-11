@@ -10,7 +10,7 @@
     <header class="container">
         <div>
             <h1>Knockout Chart</h1>
-            <p>Use <kbd>Up</kbd> or <kbd>Down</kbd> arrow to change generated participants</p>
+            <p>Use <kbd>Right</kbd> or <kbd>Left</kbd> arrow to change generated participants</p>
         </div>
 
         <div id="slider">
@@ -37,15 +37,15 @@
         })
 
         document.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowUp') {
+            if (e.key === 'ArrowRight') {
                 $range.value = Number($range.value) + 1
+                $range.dispatchEvent(new Event('change'))
             }
             
-            if (e.key === 'ArrowDown') {
+            if (e.key === 'ArrowLeft') {
                 $range.value = Number($range.value) - 1
+                $range.dispatchEvent(new Event('change'))
             }
-
-            $range.dispatchEvent(new Event('change'))
         })
         
         $value.innerText = $range.value
