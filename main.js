@@ -45,7 +45,12 @@ function createEmptyRound(index) {
  * @returns {(match: Match) => Party}
  */
 function matchWinnerAsNextParty(prevs) {
+    const isOddPrev = prevs.length > 1 && prevs.length % 2 > 0
+    const singularMatches = prevs.filter(m => m.parties.length === 1)
+
     return (match) => {
+        const singularMatch = singularMatches.filter(m => m.id === match.id).length > 0
+
         /** @type {Party} */
         const party = {
             round: match.next,
@@ -55,16 +60,7 @@ function matchWinnerAsNextParty(prevs) {
             prev: {
                 round: match.round,
                 gap: match.gap,
-            }
-        }
-
-        if (prevs.length > 0) {
-            for (const pt of match.parties) {
-                const prevMatch = prevs.find((m) => m.id === pt.matchId)
-
-                if (prevMatch === undefined || prevMatch.gap === 0 || prevMatch.gap > party.prev.gap) continue
-                
-                party.prev.gap -= prevMatch.gap
+                singular: isOddPrev && singularMatch,
             }
         }
 
@@ -113,7 +109,7 @@ function generateRounds(totalParties) {
                     return parties.filter((party) => party.round === r)
                 }, [
                     ...(rounds[r]?.parties || []),
-                    ...prevMatches.map(matchWinnerAsNextParty(rounds[r - 2]?.matches || []))
+                    ...prevMatches.map(matchWinnerAsNextParty(rounds[r - 1]?.matches || []))
                 ])
         }
 
@@ -162,11 +158,6 @@ function createMatches(participants, roundId, fnId = (num) => num) {
 
     /** @type {Match[]} */
     const matches = chunkPartiesBySide(participants, roundId).reduce((matches, party, p, participants) => {
-        if (party === undefined) {
-            console.log(participants)
-            return matches
-        }
-
         const sameNextSide = party && participants[p + 1]?.side === party.side
         const diffPrevSide = party && participants[p - 1]?.side !== party.side
         let shouldMatched = party.side === 'blue' ? sameNextSide : diffPrevSide
@@ -179,13 +170,14 @@ function createMatches(participants, roundId, fnId = (num) => num) {
 
         const match = {
             id: fnId(matchId),
-            gap: parties.reduce((gap, party) => {
-                return gap + (party.prev?.gap || 0)
+            gap: parties.reduce((gap, pt) => {
+                return gap + (pt.prev?.gap || 0)
             }, 0),
             next: party.round + 1,
             round: party.round,
             side: matches.length % 2 === 0 ? 'blue' : 'red',
-            parties
+            singular: parties[0]?.prev?.singular === true || parties[1]?.prev?.singular === true,
+            parties,
         }
 
         matches.push(match)
@@ -353,6 +345,11 @@ export function init($chart, totalParties) {
             $match.style.setProperty('--next-round', match.next)
             $match.style.setProperty('--span', match.gap)
             $match.classList.add('match')
+
+            if (match.singular) {
+                $match.classList.add('singular')
+                $matches.classList.add('has-singular')
+            }
 
             if (roundId > 0) {
                 $match.classList.add('has-prev')
