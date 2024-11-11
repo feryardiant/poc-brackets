@@ -9,11 +9,25 @@ html, body {
     margin: 0 auto;
 }
 
+kbd {
+    font-size: 14px;
+    font-family: "courier new", monospace;
+    background: lightgrey;
+    padding: 1px 3px;
+    border-radius: 3px;
+}
+
 header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 2px dashed lightgrey;
+    padding: 1em;
+}
+
+header h1, header p {
+    margin: 0;
+    line-height: 1.4em;
 }
 
 #slider {

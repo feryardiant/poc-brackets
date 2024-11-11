@@ -8,11 +8,14 @@
 </head>
 <body>
     <header class="container">
-        <h1>Knockout Chart</h1>
+        <div>
+            <h1>Knockout Chart</h1>
+            <p>Use <kbd>Up</kbd> or <kbd>Down</kbd> arrow to change generated participants</p>
+        </div>
 
         <div id="slider">
             <label for="">Generate</label>
-            <input type="range" name="range" min="5" max="50" value="5">
+            <input id="range" type="range" name="range" min="5" max="50" value="5">
             <span id="value"></span>
             <span>participants</span>
         </div>
@@ -23,7 +26,7 @@
     <script type="module">
         import { init } from "./main.js";
 
-        const $range = document.getElementsByName('range')[0]
+        const $range = document.getElementById('range')
         const $value = document.getElementById('value')
         const $form = document.getElementById('form')
         const $chart = document.getElementById('chart')
@@ -31,6 +34,18 @@
         $range.addEventListener('change', (e) => {
             $value.innerText = e.target.value
             init($chart, e.target.value)
+        })
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowUp') {
+                $range.value = Number($range.value) + 1
+            }
+            
+            if (e.key === 'ArrowDown') {
+                $range.value = Number($range.value) - 1
+            }
+
+            $range.dispatchEvent(new Event('change'))
         })
         
         $value.innerText = $range.value
