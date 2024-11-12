@@ -176,49 +176,63 @@ function generateRounds(totalParties) {
  * @property {Number} gap
  * @property {'blue'|'red'} side
  * 
- * @param {Number} roundId
- * @param {Match[]} matches 
  * @param {Boolean} singular
- * @param {Number} index
- * @param {MatchSided[]} sides
+ * @param {Match[]} matches 
+ * @param {Number} n
+ * @param {MatchSided[]} splits
+ * @param {Number} t
  * @returns {MatchNext}
  */
-function determineNextRound(roundId, matches, singular, index, sides) {
+function determineNextRound(singular, matches, n, splits, t) {
     const lastOne = matches.at(-1)
     
     /** @type {MatchNext} */
     const next = {
-        round: roundId,
-        side: (index + 1) % 2 > 0 ? 'blue' : 'red',
+        side: (n + 1) % 2 > 0 ? 'blue' : 'red',
         party: undefined,
         gap: 0,
     }
 
-    if (roundId === 1) {
-        console.log('s', sides, index)
+    // Ensure last match should next be red side
+    if (n > 0 && (n + 1) === splits.length && next.side === 'blue') {
+        next.side = 'red'
     }
 
-    // Ensure last match should next be red side
-    if (index > 0 && (index + 1) === sides.length && next.side === 'blue') {
-        next.side = 'red'
+    if (!singular) return next
 
-        if (!singular && lastOne?.singular) {
-            next.gap = 1
+    const lastTwo = matches.at(-2)
+
+    if (lastTwo && splits.length > 3) {
+        next.side = 'red'
+        
+        if (lastTwo.singular === false && splits.length !== 8 && n - 3 !== 0) {
+            lastTwo.next.side = 'blue'
         }
     }
+    
+    if (next.side !== 'red') return next
 
     // Overwrite 2 previous matches if available and currently a singular
-    if (singular && next.side === 'red') {
-        const lastTwo = matches.at(-2)
+    if (lastOne.next.side === 'red') {
+        lastOne.next.side = 'blue'
+    }
 
-        if (lastOne.next.side === 'red') {
-            lastOne.next.side = 'blue'
-        }
+    if (lastTwo?.next.side === 'blue' && lastTwo?.singular === false) {
+        lastTwo.next.round++
+        next.gap = 1
+    }
 
-        if (lastTwo?.next.side === 'blue' && lastTwo?.singular === false) {
-            lastTwo.next.round++
-            next.gap = 1
-        }
+    if ([10, 11].indexOf(splits.length) >= 0) {
+        const fixes = ['blue', 'red']
+        const idx = [-4, -3]
+
+        idx.forEach((n, i) => {
+            const toFix = matches.at(n)
+            
+            if (toFix?.singular === false && toFix?.next.side !== fixes[i]) {
+                toFix.next.side = fixes[i]
+            }
+        })
     }
 
     return next
@@ -242,13 +256,13 @@ function createMatches(parties, roundId, fnId = (num) => num) {
     const sidedMatches = chunkPartiesBySide(parties, roundId)
     let half = Math.floor(sidedMatches.length / 2)
 
-    if (half >= 5 && (half % 2 > 0 || sidedMatches.length % 2 > 0)) {
+    if ([11, 13, 19, 23, 25].indexOf(sidedMatches.length) >= 0) {
         half++
     }
 
     /** @type {Match[]} */
     const matches = []
-    const splits = half > 3 ? [
+    const splits = half >= 4 ? [
         sidedMatches.slice(0, half),
         sidedMatches.slice(half)
     ] : [
@@ -261,7 +275,7 @@ function createMatches(parties, roundId, fnId = (num) => num) {
             const singular = side.red === undefined
             const match = {
                 id: fnId(matches.length + 1),
-                next: determineNextRound(roundId, matches, singular, n, split),
+                next: determineNextRound(singular, matches, n, split, sidedMatches.length),
                 round: roundId - 1,
                 gap: 0,
                 singular,
@@ -269,6 +283,8 @@ function createMatches(parties, roundId, fnId = (num) => num) {
                     { ...side.blue, side: 'blue' }
                 ],
             }
+
+            match.next.round = roundId
 
             if (side.blue?.match && side.red?.match) {
                 match.gap = side.blue.match.gap + side.red.match.gap
@@ -283,10 +299,6 @@ function createMatches(parties, roundId, fnId = (num) => num) {
     
             matches.push(match)
         })
-    }
-
-    if (roundId === 2) {
-        console.log('matches', roundId, matches)
     }
 
     return matches
@@ -360,7 +372,6 @@ function chunkPartiesBySide(parties, roundId) {
     /**
      * @type {MatchSided[]}
      */
-    // const returns = []
     const returns = chunks.reduce((chunks, chunk, n) => {
         if (chunk.blue.length > 1) {
             chunks.push({
