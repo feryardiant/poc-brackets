@@ -1,11 +1,39 @@
 {
   "name": "knockout-chart",
+  "type": "module",
   "version": "0.0.0",
   "description": "Knockout Chart",
+  "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
+  "license": "MIT",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "simple-git-hooks"
   },
-  "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
-  "license": "MIT"
+  "devDependencies": {
+    "@antfu/eslint-config": "^3.8.0",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "eslint": "^9.14.0",
+    "lint-staged": "^15.2.10",
+    "simple-git-hooks": "^2.11.1",
+    "standard-version": "^9.5.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "simple-git-hooks": {
+    "commit-msg": "npx commitlint --edit $1",
+    "pre-commit": "npx lint-staged --allow-empty"
+  },
+  "lint-staged": {
+    "*.{json,js,ts,vue}": [
+      "eslint --fix"
+    ]
+  },
+  "standard-version": {}
 }

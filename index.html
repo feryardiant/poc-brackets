@@ -1,70 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tournament Bracket</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tournament Bracket</title>
+  <link rel="stylesheet" href="lib/style.css">
 </head>
 <body>
-    <header class="container">
-        <div>
-            <h1>Tournament Bracket</h1>
-            <p>Use <kbd>Right</kbd> or <kbd>Left</kbd> arrow to change generated participants</p>
-        </div>
+  <header class="container">
+    <div>
+      <h1>Tournament Bracket</h1>
+      <p>Use <kbd>Right</kbd> or <kbd>Left</kbd> arrow to change generated participants</p>
+    </div>
 
-        <div id="slider">
-            <label for="">Generate</label>
-            <input id="range" type="range" name="range" min="5" max="50" value="5">
-            <span id="value"></span>
-            <span>participants</span>
-        </div>
-    </header>
+    <div id="slider">
+      <label for="">Generate</label>
+      <input id="range" type="range" name="range" min="5" max="50" value="5">
+      <span id="value"></span>
+      <span>participants</span>
+    </div>
+  </header>
 
-    <main id="chart" class="container"></main>
+  <main id="chart" class="container"></main>
 
-    <script type="module">
-        import { render } from "./main.js";
+  <script type="module">
+    import { render } from "./lib/main.js";
 
-        const $range = document.getElementById('range')
-        const $value = document.getElementById('value')
-        const $form = document.getElementById('form')
-        const $chart = document.getElementById('chart')
-        const url = new URL(location.href)
-        const players = url.searchParams.get('players')
+    const $range = document.getElementById('range')
+    const $value = document.getElementById('value')
+    const $form = document.getElementById('form')
+    const $chart = document.getElementById('chart')
+    const url = new URL(location.href)
+    const players = url.searchParams.get('players')
 
-        const validate = (num) => num >= $range.min || num <= $range.max
+    const validate = (num) => num >= $range.min || num <= $range.max
 
-        if (players !== null && validate(players)) {
-            $range.value = players 
-        }
+    if (players !== null && validate(players)) {
+      $range.value = players
+    }
 
-        $range.addEventListener('change', (e) => {
-            if (e.target.value === $value.innerText || !validate(Number(e.target.value))) {
-                e.preventDefault()
-                return
-            }
+    $range.addEventListener('change', (e) => {
+      if (e.target.value === $value.innerText || !validate(Number(e.target.value))) {
+        e.preventDefault()
+        return
+      }
 
-            url.searchParams.set('players', e.target.value)
-            history.pushState({}, null, url)
+      url.searchParams.set('players', e.target.value)
+      history.pushState({}, null, url)
 
-            render($chart, $value.innerText = e.target.value)
-        })
+      render($chart, $value.innerText = e.target.value)
+    })
 
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowRight') {
-                $range.value = Number($range.value) + 1
-                $range.dispatchEvent(new Event('change'))
-            }
-            
-            if (e.key === 'ArrowLeft') {
-                $range.value = Number($range.value) - 1
-                $range.dispatchEvent(new Event('change'))
-            }
-        })
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowRight') {
+        $range.value = Number($range.value) + 1
+        $range.dispatchEvent(new Event('change'))
+      }
 
-        $value.innerText = $range.value
-        render($chart, $range.value)
-    </script>
+      if (e.key === 'ArrowLeft') {
+        $range.value = Number($range.value) - 1
+        $range.dispatchEvent(new Event('change'))
+      }
+    })
+
+    $value.innerText = $range.value
+    render($chart, $range.value)
+  </script>
 </body>
 </html>
