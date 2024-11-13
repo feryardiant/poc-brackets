@@ -1,7 +1,7 @@
 {
   "name": "knockout-chart",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Knockout Chart",
   "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
   "license": "MIT",
