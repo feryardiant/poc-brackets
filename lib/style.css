@@ -173,6 +173,12 @@ header h1, header p {
   align-items: baseline;
 }
 
+.match-inner .label {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .match-inner [data-side=blue] {
   color: blue;
 }
