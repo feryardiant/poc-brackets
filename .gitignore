@@ -22,6 +22,8 @@ Desktop.ini
 
 # Dependency folders
 # --------------------------
+bun.lockb
+deno.lock
 node_modules
 package-lock.json
 pnpm-lock.yaml
