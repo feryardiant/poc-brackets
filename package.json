@@ -1,7 +1,7 @@
 {
   "name": "knockout-chart",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Knockout Chart",
   "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
   "license": "MIT",
@@ -9,7 +9,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "postinstall": "simple-git-hooks"
+    "postinstall": "simple-git-hooks",
+    "release": "standard-version -s"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.8.0",
