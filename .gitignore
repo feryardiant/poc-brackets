@@ -1,1 +1,40 @@
+# Generic
+# --------------------------
+Thumbs.db
+Desktop.ini
+.directory
+.DS_Store
+._*
+*.cache
+*.crt
+*.log
+*.old
+*.key
+*.pem
+*.tmp
+*.zip
+*~
+
+# Development files
+# --------------------------
+.php-version
+.tool-versions
+
+# Dependency folders
+# --------------------------
 node_modules
+package-lock.json
+pnpm-lock.yaml
+vendor
+yarn.lock
+
+# IDE Project Configurations
+# --------------------------
+.idea
+.settings
+.project
+*.sublime-*
+
+# But Keep these
+# --------------------------
+!.gitkeep
