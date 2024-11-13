@@ -5,7 +5,7 @@
   "description": "Knockout Chart",
   "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
   "license": "MIT",
-  "main": "main.js",
+  "main": "lib/main.js",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
