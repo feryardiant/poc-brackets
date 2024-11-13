@@ -34,11 +34,20 @@ header h1, header p {
   display: flex;
   gap: 3px;
   justify-items: baseline;
+  width: 300px;
+}
+
+#slider input[type=range] {
+  flex-grow: 1;
 }
 
 #slider > * {
   line-height: 1em;
   margin: 0;
+}
+
+header #value {
+  font-variant-numeric: proportional-nums;
 }
 
 #chart {
@@ -157,6 +166,7 @@ header h1, header p {
   line-height: 1em;
   border: 2px solid grey;
   text-align: center;
+  font-variant-numeric: proportional-nums;
   background-color: white;
   border-radius: 50%;
   left: -11px;
