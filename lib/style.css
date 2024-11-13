@@ -85,7 +85,7 @@ header h1, header p {
   --inner-width: calc(var(--width) + 4px + var(--gap));
   --inner-height: calc((var(--height) + 2px));
   box-sizing: border-box;
-  margin-top: calc((var(--span, 0)) * (var(--inner-height) + var(--gap)));
+  margin-top: calc((var(--span, 0) * var(--curr-round)) * (var(--inner-height) + var(--gap)));
   padding: 0;
   position: relative;
   display: flex;
@@ -125,7 +125,7 @@ header h1, header p {
 
 .match:not(.final-round):after {
   --target: calc(var(--next-round) - var(--curr-round));
-  --outer-width: calc(var(--inner-width) + ((var(--gap) - 6.2px) * var(--target)));
+  --outer-width: calc(var(--inner-width) + ((var(--gap) - 6.3px) * var(--target)));
   --hline: calc(var(--outer-width) * var(--target) - (var(--outer-width) / 2));
   --vline: calc(50% + (var(--gap) * var(--target)));
   width: var(--hline);
