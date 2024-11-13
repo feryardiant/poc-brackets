@@ -186,24 +186,31 @@ function determineNextRound(singular, matches, n, splits, t) {
 
     const lastTwo = matches.at(-2)
 
-    if (lastTwo && splits.length > 3) {
+    if (lastTwo && n - 3 !== 0) {
         next.side = 'red'
         
-        if (lastTwo.singular === false && splits.length !== 8 && n - 3 !== 0) {
+        // Overwrite 2 previous match if that wasn't a singular
+        if (
+            lastTwo.singular === false && 
+            ((splits.length !== 8 && splits.length > 3) || matches.at(-3)?.singular === true)
+        ) {
             lastTwo.next.side = 'blue'
+        }
+
+        if (lastTwo.next.side === 'blue') {
+            lastTwo.next.round++
+            next.gap++
+        }
+
+        if (lastTwo.singular === false) {
+            console.log(matches.at(-3))
         }
     }
     
     if (next.side !== 'red') return next
 
-    // Overwrite 2 previous matches if available and currently a singular
     if (lastOne.next.side === 'red') {
         lastOne.next.side = 'blue'
-    }
-
-    if (lastTwo?.next.side === 'blue' && lastTwo?.singular === false) {
-        lastTwo.next.round++
-        next.gap++
     }
 
     if ([10, 11].indexOf(splits.length) >= 0) {
@@ -298,18 +305,10 @@ function createMatches(parties, roundId, fnId = (num) => num) {
                 }
             }
 
-            if (match.id == 16) {
-                console.log(match)
-            }
-
             match.next.round = roundId
     
             matches.push(match)
         })
-    }
-
-    if (roundId > 1) {
-        console.log('matches', roundId, matches)
     }
 
     return matches
@@ -451,8 +450,6 @@ export function init($chart, totalParties) {
     $chart.style.setProperty('--gap', `${matchGap}px`)
 
     for (const roundId in rounds) {
-        if (roundId > 3) break
-
         const round = rounds[roundId]
 
         const $section = document.createElement('section')
