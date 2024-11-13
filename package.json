@@ -5,11 +5,10 @@
   "description": "Knockout Chart",
   "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
   "license": "MIT",
-  "main": "main.js",
+  "main": "lib/main.js",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "simple-git-hooks",
     "release": "standard-version -s"
   },
