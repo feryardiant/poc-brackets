@@ -11,6 +11,7 @@
  * @property {Number} round
  * @property {'blue'|'red'} side
  * @property {?MatchPrev} match
+ * @property {?Number} order
  * 
  * @param {Number} count
  * @param {Boolean} unamed
@@ -48,13 +49,13 @@ function createEmptyRound(index) {
 
 /**
  * @param {Match[]} prevs 
- * @returns {(match: Match) => Party}
+ * @returns {(match: Match, m: Number) => Party}
  */
 function matchWinnerAsNextParty(prevs) {
     const isOddPrev = prevs.length > 1 && prevs.length % 2 > 0
     const singularMatches = prevs.filter(m => m.parties.length === 1)
 
-    return (match) => {
+    return (match, m) => {
         const singularMatch = singularMatches.filter(m => m.id === match.id).length > 0
 
         /** @type {Party} */
@@ -62,6 +63,7 @@ function matchWinnerAsNextParty(prevs) {
             round: match.next.round,
             side: match.next.side,
             name: `Winner match ${match.id}`,
+            order: ((m + 1) / (prevs.length + match.round)).toPrecision(3),
             match: {
                 id: match.id,
                 round: match.round,
@@ -69,6 +71,8 @@ function matchWinnerAsNextParty(prevs) {
                 singular: (singularMatch && isOddPrev) && match.singular,
             }
         }
+
+        party.order = Number(party.order)
 
         return party
     }
@@ -83,7 +87,24 @@ function generateRounds(totalParties) {
     let rounds = []
     let shouldNext = true
     let r = 0
-    
+
+    /**
+     * @param {Party} party
+     * @param {Number} round 
+     * @param {Number} matchId
+     */
+    const pushParty = (party, round, matchId) => {
+        if (!round) return 
+
+        if (rounds[round] === undefined) {
+            rounds[round] = createEmptyRound(round)
+        }
+
+        if (rounds[round].parties.find(pt => pt.match.id === matchId) === undefined) {
+            rounds[round].parties.push(party)
+        }
+    }
+
     while (shouldNext) {
         const prevRound = r >= 1 ? rounds[r - 1] : null
         const prevMatches = prevRound?.matches || []
@@ -94,23 +115,13 @@ function generateRounds(totalParties) {
             parties: r === 0
                 ? generateParties(totalParties)
                 : rounds.slice(0, r).reduce((parties, round, rnd) => {
-                    round.matches.forEach((match) => {
-                        if (rounds[match.next.round] === undefined) {
-                            rounds[match.next.round] = createEmptyRound(match.next.round)
-                        }
-                    })
+                    round.matches.forEach((match, m) => pushParty(
+                        matchWinnerAsNextParty(prevMatches)(match, m),
+                        match.next.round,
+                        match.id
+                    ))
 
-                    parties.forEach((party, p) => {
-                        if (!party.round) return
-
-                        if (rounds[party.round] === undefined) {
-                            rounds[party.round] = createEmptyRound(party.round)
-                        }
-
-                        if (rounds[party.round].parties.find(pt => pt.match.id === party.match.id) === undefined) {
-                            rounds[party.round].parties.push(party)
-                        }
-                    })
+                    parties.forEach((party, p) => pushParty(party, party.round, party.match.id))
 
                     return parties.filter((party) => party.round === r)
                 }, [
@@ -124,33 +135,6 @@ function generateRounds(totalParties) {
                 return num + (prevMatches[prevMatches.length - 1]?.id || 0)
             })
             : []
-
-        // if (r > 0 && prevMatches.length > round.parties.length) {
-        //     const nextRoundParties = prevMatches.filter(m => m.next.round === round.id)
-
-        //     for (const nextParty of nextRoundParties) {
-        //         const foundMatch = round.matches.find((match) => {
-        //             return match.parties.filter(p => p.match.id > nextParty.id).length > 0
-        //         })
-
-        //         if (!foundMatch) {
-        //             continue
-        //         }
-
-        //         foundMatch.gap++
-
-        //         if (nextParty.next.side === 'red') {
-        //             foundMatch.next.round++
-        //         }
-
-        //         if (nextParty.next.side === foundMatch.next.side) {
-        //             foundMatch.next.side = 'red'
-        //         }
-        //         // console.log(foundMatch)
-        //     }
-
-        //     // console.log(nextRoundParties, round.matches)
-        // }
 
         shouldNext = round.matches.length > 0
 
@@ -219,7 +203,7 @@ function determineNextRound(singular, matches, n, splits, t) {
 
     if (lastTwo?.next.side === 'blue' && lastTwo?.singular === false) {
         lastTwo.next.round++
-        next.gap = 1
+        next.gap++
     }
 
     if ([10, 11].indexOf(splits.length) >= 0) {
@@ -284,21 +268,48 @@ function createMatches(parties, roundId, fnId = (num) => num) {
                 ],
             }
 
-            match.next.round = roundId
-
-            if (side.blue?.match && side.red?.match) {
-                match.gap = side.blue.match.gap + side.red.match.gap
-            }
-
             if (side.red !== undefined) {
                 match.parties.push({
                     ...side.red,
                     side: 'red',
                 })
             }
+
+            if (side.blue?.match && side.red?.match) {
+                match.gap = side.blue.match.gap + side.red.match.gap
+
+                const lastMatch = matches.at(-1)
+                const flips = {
+                    blue: 'red',
+                    red: 'blue',
+                }
+
+                if (match.next.side === lastMatch?.next.side) {
+                    match.next.side = flips[match.next.side]
+                }
+
+                if (match.gap > 0) {
+                    match.next.side = 'red'
+                    
+                    if (matches.length > 0 && lastMatch.next.side === 'blue') {
+                        lastMatch.next.round++
+                        match.next.gap += match.round
+                    }
+                }
+            }
+
+            if (match.id == 16) {
+                console.log(match)
+            }
+
+            match.next.round = roundId
     
             matches.push(match)
         })
+    }
+
+    if (roundId > 1) {
+        console.log('matches', roundId, matches)
     }
 
     return matches
@@ -317,31 +328,38 @@ function createMatches(parties, roundId, fnId = (num) => num) {
  * @param {Number} roundId
  */
 function chunkPartiesBySide(parties, roundId) {
+    /** @type {MatchSided[]} */
+    const returns = []
+
+    if (roundId > 1) {
+        // Track index of `parties` that has been added to `returns`
+        const ns = []
+
+        // Ensure current parties has correct ordering based on their prior
+        // total match compared to their index on that match
+        parties.sort((a, b) => a.order - b.order)
+
+        return parties.reduce((returns, party, p, parties) => {
+            // Skip arrangement if current `p` is already added to `ns`
+            // or current `party` was a red one
+            if (ns.includes(p) || party.side === 'red') return returns
+
+            // Find index of next first `red` party that hasn't been added to `ns`
+            const r = parties.findIndex((pt, n) => pt.side === 'red' && !ns.includes(n))
+
+            ns.push(p, r)
+            returns.push({
+                blue: party,
+                red: parties[r],
+            })
+
+            return returns
+        }, returns)
+    }
+
     /** @type {Chunk[]} */
     let chunks = []
     let half = parties.length
-
-    if (roundId > 1) {
-        /**
-         * @type {MatchSided[]}
-         */
-        const returns = []
-        let side = {}
-
-        for (const party of parties) {
-            side[party.side] = party
-            
-            if (party.side === 'blue') {
-                continue
-            }
-
-            returns.push(side)
-            side = {}
-        }
-
-        // // console.log('ret', roundId, chunks, returns)
-        return returns
-    }
 
     // Split each participants into chunked blue and red
     // with criteria of each chunk can only consist of max 2 blues and 1 red
@@ -369,35 +387,26 @@ function chunkPartiesBySide(parties, roundId) {
         chunks.push(...parts)
     }
 
-    /**
-     * @type {MatchSided[]}
-     */
-    const returns = chunks.reduce((chunks, chunk, n) => {
+    return chunks.reduce((returns, chunk, n) => {
         if (chunk.blue.length > 1) {
-            chunks.push({
+            returns.push({
                 blue: chunk.blue.splice(0, 1)[0],
                 red: undefined,
             })
         }
 
-        if (chunk.red.length === 0 && (chunks.length > 0 && chunks.at(-1).red === undefined)) {
-            chunks.at(-1).red = chunk.blue[0]
-            return chunks
+        if (chunk.red.length === 0 && (returns.length > 0 && returns.at(-1).red === undefined)) {
+            returns.at(-1).red = chunk.blue[0]
+            return returns
         }
 
-        chunks.push({
+        returns.push({
             blue: chunk.blue[0],
             red: chunk.red[0],
         })
 
-        return chunks
-    }, [])
-
-    if (roundId === 1) {
-        // console.log('ret', returns)
-    }
-
-    return returns
+        return returns
+    }, returns)
 }
 
 /**
@@ -442,7 +451,7 @@ export function init($chart, totalParties) {
     $chart.style.setProperty('--gap', `${matchGap}px`)
 
     for (const roundId in rounds) {
-        if (roundId > 1) break
+        if (roundId > 3) break
 
         const round = rounds[roundId]
 
