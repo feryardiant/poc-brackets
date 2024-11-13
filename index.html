@@ -5,17 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Knockout Chart</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module">
-        import { init } from "./main.js";
-
-        init(20)
-    </script>
 </head>
 <body>
     <header class="container">
-        <h1>Knockout Chart</h1>
+        <div>
+            <h1>Knockout Chart</h1>
+            <p>Use <kbd>Right</kbd> or <kbd>Left</kbd> arrow to change generated participants</p>
+        </div>
+
+        <div id="slider">
+            <label for="">Generate</label>
+            <input id="range" type="range" name="range" min="5" max="50" value="5">
+            <span id="value"></span>
+            <span>participants</span>
+        </div>
     </header>
 
     <main id="chart" class="container"></main>
+
+    <script type="module">
+        import { render } from "./main.js";
+
+        const $range = document.getElementById('range')
+        const $value = document.getElementById('value')
+        const $form = document.getElementById('form')
+        const $chart = document.getElementById('chart')
+        const url = new URL(location.href)
+        const players = url.searchParams.get('players')
+
+        if (players !== null && (players >= $range.min || players <= $range.max)) {
+            $range.value = players 
+        }
+
+        $range.addEventListener('change', (e) => {
+            url.searchParams.set('players', e.target.value)
+
+            history.pushState({}, null, url)
+
+            $value.innerText = e.target.value
+            render($chart, e.target.value)
+        })
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowRight') {
+                $range.value = Number($range.value) + 1
+                $range.dispatchEvent(new Event('change'))
+            }
+            
+            if (e.key === 'ArrowLeft') {
+                $range.value = Number($range.value) - 1
+                $range.dispatchEvent(new Event('change'))
+            }
+        })
+
+        $value.innerText = $range.value
+        render($chart, $range.value)
+    </script>
 </body>
 </html>
