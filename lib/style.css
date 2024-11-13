@@ -58,7 +58,6 @@ header h1, header p {
 }
 
 .rounds {
-  --width: 180px;
   gap: 1em;
   padding: 0 1em 0 1.4em;
   border-left: 2px dashed lightgrey;
