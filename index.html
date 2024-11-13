@@ -24,16 +24,26 @@
     <main id="chart" class="container"></main>
 
     <script type="module">
-        import { init } from "./main.js";
+        import { render } from "./main.js";
 
         const $range = document.getElementById('range')
         const $value = document.getElementById('value')
         const $form = document.getElementById('form')
         const $chart = document.getElementById('chart')
+        const url = new URL(location.href)
+        const players = url.searchParams.get('players')
+
+        if (players !== null && (players >= $range.min || players <= $range.max)) {
+            $range.value = players 
+        }
 
         $range.addEventListener('change', (e) => {
+            url.searchParams.set('players', e.target.value)
+
+            history.pushState({}, null, url)
+
             $value.innerText = e.target.value
-            init($chart, e.target.value)
+            render($chart, e.target.value)
         })
 
         document.addEventListener('keyup', (e) => {
@@ -47,9 +57,9 @@
                 $range.dispatchEvent(new Event('change'))
             }
         })
-        
+
         $value.innerText = $range.value
-        init($chart, $range.value)
+        render($chart, $range.value)
     </script>
 </body>
 </html>

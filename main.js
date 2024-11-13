@@ -150,7 +150,6 @@ function generateRounds(totalParties) {
         rounds.splice(r - 1, 1)
     }
 
-    // console.log('rounds', rounds)
     return rounds
 }
 
@@ -200,10 +199,6 @@ function determineNextRound(singular, matches, n, splits, t) {
         if (lastTwo.next.side === 'blue') {
             lastTwo.next.round++
             next.gap++
-        }
-
-        if (lastTwo.singular === false) {
-            console.log(matches.at(-3))
         }
     }
     
@@ -431,7 +426,6 @@ function assignPartySide(parties, slice) {
         blue.push(...red.splice(0, gap))
     }
 
-    // console.log(slice, parties.length, blue, red)
     return { blue, red }
 }
 
@@ -439,7 +433,7 @@ function assignPartySide(parties, slice) {
  * @param {HTMLDivElement} $chart
  * @param {Number} totalParties
  */
-export function init($chart, totalParties) {
+export function render($chart, totalParties) {
     const rounds = generateRounds(totalParties)
     const matchGap = 30
     const matchHeight = 62
