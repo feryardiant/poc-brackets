@@ -33,17 +33,22 @@
         const url = new URL(location.href)
         const players = url.searchParams.get('players')
 
-        if (players !== null && (players >= $range.min || players <= $range.max)) {
+        const validate = (num) => num >= $range.min || num <= $range.max
+
+        if (players !== null && validate(players)) {
             $range.value = players 
         }
 
         $range.addEventListener('change', (e) => {
-            url.searchParams.set('players', e.target.value)
+            if (e.target.value === $value.innerText || !validate(Number(e.target.value))) {
+                e.preventDefault()
+                return
+            }
 
+            url.searchParams.set('players', e.target.value)
             history.pushState({}, null, url)
 
-            $value.innerText = e.target.value
-            render($chart, e.target.value)
+            render($chart, $value.innerText = e.target.value)
         })
 
         document.addEventListener('keyup', (e) => {
