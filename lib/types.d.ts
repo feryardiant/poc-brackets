@@ -8,18 +8,25 @@ export interface Party {
   name: string
   round: number
   side: Side
-  match?: Match
+  match?: MatchPrev
   order?: number
   continent?: string
 }
 
-export interface Match {
+interface BaseMatch {
   id: number
   round: number
   singular: boolean
-  parties: Party[]
   next: MatchNext
   gap: number
+}
+
+export interface Match extends BaseMatch {
+  parties: Party[]
+}
+
+export interface MatchPrev extends BaseMatch {
+  index: number
 }
 
 export interface MatchNext {
