@@ -6,6 +6,7 @@
   "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
   "license": "MIT",
   "main": "lib/main.js",
+  "types": "lib/tipes.d.ts",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
