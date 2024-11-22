@@ -93,7 +93,7 @@ header #value {
   --inner-width: calc(var(--width) + 4px + var(--gap));
   --inner-height: calc((var(--height) + 2px));
   box-sizing: border-box;
-  margin-top: calc((var(--span, 0) * var(--curr-round)) * (var(--inner-height) + var(--gap)));
+  margin-bottom: calc((var(--span, 0) * var(--curr-round)) * (var(--inner-height) + var(--gap)));
   padding: 0;
   position: relative;
   display: flex;
