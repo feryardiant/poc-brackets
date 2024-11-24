@@ -1,9 +1,5 @@
 export type Side = 'blue' | 'red'
 
-export interface MatchToPartyFn {
-  (match: Match, n: number): Party
-}
-
 export interface Party {
   name: string
   round: number
@@ -16,13 +12,13 @@ export interface Party {
 interface BaseMatch {
   id: number
   round: number
-  singular: boolean
   next: MatchNext
   size: number
   span: number
 }
 
 export interface Match extends BaseMatch {
+  singular: boolean
   parties: Party[]
 }
 
