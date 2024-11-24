@@ -85,6 +85,7 @@ header #value {
 }
 
 .match {
+  --vheight: 50%;
   --round-id: calc(var(--curr-round) + 1);
   --inner-width: calc(var(--width) + 4px + var(--gap));
   --inner-height: calc(((var(--height) + var(--gap)) * var(--size)) - var(--gap));
@@ -96,6 +97,16 @@ header #value {
   align-items: center;
   isolation: isolate;
   height: var(--inner-height);
+}
+
+.match.odd {
+  --inner-gap: calc((var(--height) + var(--gap)) / 2);
+  margin-top: var(--inner-gap);
+  height: calc(var(--inner-height) - var(--inner-gap));
+}
+
+.match.odd[data-side=red]:after {
+  --vheight: 60%;
 }
 
 .match-inner {
@@ -127,7 +138,7 @@ header #value {
   --target: calc(var(--next-round) - var(--curr-round));
   --outer-width: calc(var(--inner-width) + ((var(--gap) - 6.3px) * var(--target)));
   --hline: calc(var(--outer-width) * var(--target) - (var(--outer-width) / 2));
-  --vline: calc(50% + (var(--gap) * var(--target)));
+  --vline: calc(var(--vheight) + (var(--gap) * var(--target)));
   width: var(--hline);
   height: var(--vline);
   right: calc(var(--hline) * -1);
