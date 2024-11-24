@@ -3,28 +3,9 @@ name: Code
 on:
   pull_request:
     branches: [main]
-  # push:
-  #   branches: [main]
+    types: [labeled]
 
 jobs:
-  labels:
-    name: Labels
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      pull-requests: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Labeler
-        uses: actions/labeler@v5
-        with:
-          dot: true
-
   lint:
     name: Linting
     runs-on: ubuntu-latest
