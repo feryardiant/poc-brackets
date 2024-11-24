@@ -18,7 +18,8 @@ interface BaseMatch {
   round: number
   singular: boolean
   next: MatchNext
-  gap: number
+  size: number
+  span: number
 }
 
 export interface Match extends BaseMatch {
@@ -31,8 +32,8 @@ export interface MatchPrev extends BaseMatch {
 
 export interface MatchNext {
   round: number
-  gap: number
   side: Side
+  span: number
 }
 
 export interface Round {

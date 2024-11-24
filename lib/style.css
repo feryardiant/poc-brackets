@@ -68,7 +68,7 @@ header #value {
 
 .rounds {
   gap: 1em;
-  padding: 0 1em 0 1.4em;
+  padding: 0 1em 1em 1.4em;
   border-left: 2px dashed lightgrey;
 }
 
@@ -84,26 +84,18 @@ header #value {
   min-width: var(--width);
 }
 
-.matches.has-singular {
-  padding-bottom: calc(var(--height) + 2em);
-}
-
 .match {
   --round-id: calc(var(--curr-round) + 1);
   --inner-width: calc(var(--width) + 4px + var(--gap));
-  --inner-height: calc((var(--height) + 2px));
+  --inner-height: calc(((var(--height) + var(--gap)) * var(--size)) - var(--gap));
   box-sizing: border-box;
-  margin-bottom: calc((var(--span, 0) * var(--curr-round)) * (var(--inner-height) + var(--gap)));
+  margin-bottom: calc((var(--height) + var(--gap)) * var(--span));
   padding: 0;
   position: relative;
   display: flex;
   align-items: center;
   isolation: isolate;
-  min-height: var(--inner-height);
-}
-
-.match.singular {
-  max-height: calc(var(--height) * 2 + var(--gap));
+  height: var(--inner-height);
 }
 
 .match-inner {
