@@ -140,14 +140,12 @@ header #value {
   top: calc(50% - 1px);
   /* border-color: blue; */
   border-top-width: 2px;
-  z-index: 2;
 }
 
 .match[data-side=red]:after {
   bottom: calc(50% - 1px);
   /* border-color: red; */
   border-bottom-width: 2px;
-  z-index: 0;
 }
 
 .match > h4 {
