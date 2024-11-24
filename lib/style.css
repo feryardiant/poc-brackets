@@ -9,14 +9,6 @@ html, body {
   margin: 0 auto;
 }
 
-kbd {
-  font-size: 14px;
-  font-family: "courier new", monospace;
-  background: lightgrey;
-  padding: 1px 3px;
-  border-radius: 3px;
-}
-
 header {
   display: flex;
   align-items: center;
@@ -30,11 +22,47 @@ header h1, header p {
   line-height: 1.4em;
 }
 
-#slider {
+kbd {
+  font-size: 14px;
+  font-family: "courier new", monospace;
+  background: lightgrey;
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+#options {
+  width: 300px;
+}
+
+#options #selector {
+  margin-bottom: 1em;
+}
+
+#options #selector,
+#options .option {
+  width: 100%;
+}
+
+[aria-hidden=true] {
+  display: none;
+  visibility: hidden;
+}
+
+[aria-hidden=false] {
+  visibility: visible;
+}
+
+p[aria-hidden=false] {
+  display: block;
+}
+
+.option[aria-hidden=false] {
   display: flex;
+}
+
+#slider {
   gap: 3px;
   justify-items: baseline;
-  width: 300px;
 }
 
 #slider input[type=range] {
