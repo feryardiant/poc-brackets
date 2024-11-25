@@ -13,12 +13,12 @@ interface BaseMatch {
   id: number
   round: number
   next: MatchNext
+  singular: boolean
   size: number
   span: number
 }
 
 export interface Match extends BaseMatch {
-  singular: boolean
   parties: Party[]
 }
 
