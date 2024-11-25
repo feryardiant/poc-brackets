@@ -41,8 +41,8 @@
   <main id="chart" class="container" style="--height: 62px; --width: 180px; --gap: 1em;"></main>
 
   <script type="module">
-    import { render } from "./lib/main.js";
-    import { determinePartiesSide, generateParties, parseCsv } from "./lib/parties.js";
+    import { parseCsv, render } from "./lib/main.js";
+    import { determinePartiesSide, generateParties } from "./lib/parties.js";
 
     const $range = document.getElementById('range')
     const $value = document.getElementById('value')
@@ -57,7 +57,7 @@
       '#upload': 'slider',
     }
 
-    const validate = (num) => num >= $range.min && num <= $range.max
+    const validate = (num) => num >= Number($range.min) && num <= Number($range.max)
 
     if (players !== null && validate(players)) {
       $range.value = players
@@ -84,7 +84,6 @@
       reader.onload = (ev) => {
         const parties = parseCsv(ev.target.result)
 
-        console.log(parties.length, validate(parties.length))
         if (!validate(parties.length)) {
           return alert('Invalid party size')
         }
