@@ -19,7 +19,9 @@ interface BaseMatch {
 }
 
 export interface Match extends BaseMatch {
+  bye: boolean
   parties: Party[]
+  hidden: boolean
 }
 
 export interface MatchPrev extends BaseMatch {
@@ -30,6 +32,11 @@ export interface MatchNext {
   round: number
   side: Side
   span: number
+}
+
+export interface MatchSided {
+  blue: Party
+  red: Party
 }
 
 export interface Round {
