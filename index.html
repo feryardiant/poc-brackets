@@ -15,21 +15,34 @@
   <header class="container">
     <div>
       <h1>Tournament Bracket</h1>
-      <p>Use <kbd>Right</kbd> or <kbd>Left</kbd> arrow to change generated participants</p>
+      <p id="slider-hint" aria-hidden="false">Use <kbd>Right</kbd> or <kbd>Left</kbd> arrow to change generated participants</p>
+      <p id="upload-hint" aria-hidden="true">Please download the <a href="example/participant.csv">example</a> to use upload</p>
     </div>
 
-    <div id="slider">
-      <label for="">Generate</label>
-      <input id="range" type="range" name="range" min="5" max="50" value="5" placeholder="Generate participant">
-      <span id="value"></span>
-      <span>participants</span>
+    <div id="options">
+      <div id="selector">
+        <button class="options" data-target="#slider">Generate</button>
+        <button class="options" data-target="#upload">Upload</button>
+      </div>
+
+      <div id="slider" class="option" aria-describedby="#slider-hint" aria-hidden="false">
+        <label for="">Generate</label>
+        <input id="range" type="range" name="range" min="5" max="50" value="5" placeholder="Generate participant">
+        <span id="value"></span>
+        <span>participants</span>
+      </div>
+
+      <form id="upload" class="option" aria-describedby="#upload-hint" aria-hidden="true">
+        <input type="file" name="parties" id="parties" accept="text/csv">
+      </form>
     </div>
   </header>
 
   <main id="chart" class="container" style="--height: 62px; --width: 180px; --gap: 1em;"></main>
 
   <script type="module">
-    import { render } from "./lib/main.js";
+    import { parseCsv, render } from "./lib/main.js";
+    import { determinePartiesSide, generateParties } from "./lib/parties.js";
 
     const $range = document.getElementById('range')
     const $value = document.getElementById('value')
@@ -37,12 +50,52 @@
     const $chart = document.getElementById('chart')
     const url = new URL(location.href)
     const players = url.searchParams.get('players')
+    const $options = document.getElementsByClassName('options')
+    const $parties = document.getElementById('parties')
+    const flip = {
+      '#slider': 'upload',
+      '#upload': 'slider',
+    }
 
-    const validate = (num) => num >= $range.min || num <= $range.max
+    const validate = (num) => num >= Number($range.min) && num <= Number($range.max)
 
     if (players !== null && validate(players)) {
       $range.value = players
     }
+
+    for (const $btn of $options) {
+      $btn.addEventListener('click', (e) => {
+        const target = e.target.getAttribute('data-target')
+        const $target = document.querySelector(target)
+        const $hint = document.querySelector(`${target}-hint`)
+
+        if ($target.getAttribute('aria-hidden') === 'true') {
+          $target.setAttribute('aria-hidden', 'false')
+          $hint.setAttribute('aria-hidden', 'false')
+          document.getElementById(flip[target]).setAttribute('aria-hidden', 'true')
+          document.getElementById(`${flip[target]}-hint`).setAttribute('aria-hidden', 'true')
+        }
+      })
+    }
+
+    $parties.addEventListener('change', (e) => {
+      const reader = new FileReader()
+
+      reader.onload = (ev) => {
+        const parties = parseCsv(ev.target.result)
+
+        if (!validate(parties.length)) {
+          return alert('Invalid party size')
+        }
+
+        url.searchParams.delete('players')
+        history.pushState({}, null, url)
+
+        render($chart, determinePartiesSide(parties))
+      }
+
+      reader.readAsText(e.target.files[0])
+    })
 
     $range.addEventListener('change', (e) => {
       if (e.target.value === $value.innerText || !validate(Number(e.target.value))) {
@@ -53,7 +106,7 @@
       url.searchParams.set('players', e.target.value)
       history.pushState({}, null, url)
 
-      render($chart, $value.innerText = e.target.value)
+      render($chart, generateParties($value.innerText = e.target.value))
     })
 
     document.addEventListener('keyup', (e) => {
@@ -68,8 +121,7 @@
       }
     })
 
-    $value.innerText = $range.value
-    render($chart, $range.value)
+    render($chart, generateParties($value.innerText = $range.value))
   </script>
 </body>
 </html>
