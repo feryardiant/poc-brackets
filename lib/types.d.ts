@@ -35,6 +35,7 @@ export interface MatchNext {
 }
 
 export interface MatchSided {
+  index: number
   blue: Party
   red: Party
 }
