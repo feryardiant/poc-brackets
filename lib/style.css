@@ -128,9 +128,9 @@ header #value {
 }
 
 .match.odd {
-  --inner-gap: calc((var(--height) + var(--gap)) / 2);
-  margin-top: var(--inner-gap);
-  height: calc(var(--inner-height) - var(--inner-gap));
+  /* --inner-gap: calc((var(--height) + var(--gap)) / 2); */
+  /* margin-top: var(--inner-gap); */
+  /* height: calc(var(--inner-height) - var(--inner-gap)); */
 }
 
 .match.odd[data-side=red]:after {
