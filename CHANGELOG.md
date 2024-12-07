@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.1](https://github.com/feryardiant/poc-brackets/compare/v0.2.0...v0.2.1) (2024-12-07)
+
+
+### Features
+
+* simplify winner selection by dispatching custom event to the `` instance ([f8c1f25](https://github.com/feryardiant/poc-brackets/commit/f8c1f2584a86b247537f34a7282058702ce01d1c))
+
 ## [0.2.0](https://github.com/feryardiant/poc-brackets/compare/v0.1.1...v0.2.0) (2024-12-07)
 
 
