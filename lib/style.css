@@ -177,14 +177,14 @@ header #value {
 
 .match[data-side=blue]:after {
   top: calc(50% - 1px);
-  /* border-color: blue; */
   border-top-width: 2px;
+  /* border-color: blue; */
 }
 
 .match[data-side=red]:after {
   bottom: calc(50% - 1px);
-  /* border-color: red; */
   border-bottom-width: 2px;
+  /* border-color: red; */
 }
 
 .match > h4 {
@@ -224,6 +224,11 @@ header #value {
 
 .match-inner [data-side=red] {
   color: red;
+}
+
+.match-inner .loser {
+  text-decoration: line-through;
+  color: gray;
 }
 
 .match-inner div:last-child {
