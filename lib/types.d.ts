@@ -1,6 +1,7 @@
 export type Side = 'blue' | 'red'
 
 export interface Party {
+  id: number
   name: string
   round: number
   side: Side
