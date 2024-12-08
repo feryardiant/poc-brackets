@@ -21,13 +21,13 @@
 
     <div id="options">
       <div id="selector">
-        <button class="options" data-target="#slider">Generate</button>
-        <button class="options" data-target="#upload">Upload</button>
+        <button class="options" data-target="#slider" tabindex="-1">Generate</button>
+        <button class="options" data-target="#upload" tabindex="-1">Upload</button>
       </div>
 
       <div id="slider" class="option" aria-describedby="#slider-hint" aria-hidden="false">
-        <label for="">Generate</label>
-        <input id="range" type="range" name="range" min="5" max="50" value="5" placeholder="Generate participant">
+        <label for="range">Generate</label>
+        <input id="range" type="range" name="range" min="5" max="50" value="5" placeholder="Generate participant" tabindex="-1">
         <span id="value"></span>
         <span>participants</span>
       </div>
@@ -38,7 +38,7 @@
     </div>
   </header>
 
-  <main id="chart" class="container" style="--height: 62px; --width: 180px; --gap: 1em;"></main>
+  <main id="chart" class="container" tabindex="-1" style="--height: 62px; --width: 180px; --gap: 1em;"></main>
 
   <script type="module">
     import { parseCsv, render } from "./lib/main.js";

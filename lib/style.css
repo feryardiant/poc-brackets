@@ -175,13 +175,13 @@ header #value {
   border-radius: 4px;
 }
 
-.match[data-side=blue]:after {
+.match[data-next-side=blue]:after {
   top: calc(50% - 1px);
   border-top-width: 2px;
   /* border-color: blue; */
 }
 
-.match[data-side=red]:after {
+.match[data-next-side=red]:after {
   bottom: calc(50% - 1px);
   border-bottom-width: 2px;
   /* border-color: red; */
