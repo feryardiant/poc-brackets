@@ -116,9 +116,9 @@ header #value {
   --vheight: 50%;
   --round-id: calc(var(--curr-round) + 1);
   --inner-width: calc(var(--width) + 4px + var(--gap));
-  --inner-height: calc(((var(--height) + var(--gap)) * var(--size)) - var(--gap));
+  --inner-height: calc(((var(--height) + var(--gap)) * var(--size, 1)) - var(--gap));
   box-sizing: border-box;
-  margin-bottom: calc((var(--height) + var(--gap)) * var(--span));
+  margin-bottom: calc((var(--height) + var(--gap)) * var(--span, 0));
   padding: 0;
   position: relative;
   display: flex;
@@ -127,32 +127,14 @@ header #value {
   height: var(--inner-height);
 }
 
-.match.odd {
-  /* --inner-gap: calc((var(--height) + var(--gap)) / 2); */
-  /* margin-top: var(--inner-gap); */
-  /* height: calc(var(--inner-height) - var(--inner-gap)); */
-}
-
-.match.odd[data-side=red]:after {
-  --vheight: 60%;
-}
-
-.match-inner {
-  background-color: white;
-  border: 2px solid grey;
-  border-radius: .4rem;
-  margin: var(--margin) 0;
-  width: var(--width);
-}
-
-.match:not(.final-round):before,
-.match:not(.final-round):after {
+.match:not(.final-round):not([aria-hidden=true]):before,
+.match:not(.final-round):not([aria-hidden=true]):after {
   --middle: calc(50% - (var(--height) / 2));
   content: '';
   position: absolute;
 }
 
-.match:not(.final-round):before {
+.match:before {
   width: 8px;
   top: calc(50% - (8px / 2));
   right: -4px;
@@ -162,7 +144,7 @@ header #value {
   z-index: 2;
 }
 
-.match:not(.final-round):after {
+.match:after {
   --target: calc(var(--next-round) - var(--curr-round));
   --outer-width: calc(var(--inner-width) + ((var(--gap) - 6.3px) * var(--target)));
   --hline: calc(var(--outer-width) * var(--target) - (var(--outer-width) / 2));
@@ -173,6 +155,12 @@ header #value {
   border: 0 solid grey;
   border-right-width: 2px;
   border-radius: 4px;
+}
+
+.match.odd {
+  /* --inner-gap: calc((var(--height) + var(--gap)) / 2); */
+  /* margin-top: var(--inner-gap); */
+  /* height: calc(var(--inner-height) - var(--inner-gap)); */
 }
 
 .match[data-next-side=blue]:after {
@@ -187,7 +175,19 @@ header #value {
   /* border-color: red; */
 }
 
-.match > h4 {
+.match.odd[data-next-side=red]:after {
+  --vheight: 60%;
+}
+
+.match-inner {
+  background-color: white;
+  border: 2px solid grey;
+  border-radius: .4rem;
+  margin: var(--margin) 0;
+  width: var(--width);
+}
+
+.match-title {
   position: absolute;
   padding: 3px;
   margin: 0;
@@ -202,7 +202,7 @@ header #value {
   top: calc(50% - 13px);
 }
 
-.match-inner div {
+.party {
   display: flex;
   border-bottom: 1px solid #bfbfbf;
   padding: .3em .4em .3em 1.2em;
@@ -212,25 +212,25 @@ header #value {
   align-items: baseline;
 }
 
-.match-inner .label {
+.party-label {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
-.match-inner [data-side=blue] {
+.party[data-side=blue] {
   color: blue;
 }
 
-.match-inner [data-side=red] {
+.party[data-side=red] {
   color: red;
 }
 
-.match-inner .loser {
+.party.loser {
   text-decoration: line-through;
   color: gray;
 }
 
-.match-inner div:last-child {
+.match-inner .party:last-child {
   border-bottom-width: 0;
 }
