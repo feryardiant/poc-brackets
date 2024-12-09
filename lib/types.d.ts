@@ -7,8 +7,6 @@ export type Side = 'blue' | 'red'
 export interface MatchPrev {
   id: number
   round: number
-  next: MatchNext
-  singular: boolean
   size: number
   span: number
   index: number
