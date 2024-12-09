@@ -19,6 +19,9 @@
     "./parties.js": "./lib/parties.js"
   },
   "types": "lib/tipes.d.ts",
+  "files": [
+    "./lib/*"
+  ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
