@@ -114,6 +114,7 @@ header #value {
 
 .match {
   --vheight: 50%;
+  --border-color: grey;
   --round-id: calc(var(--curr-round) + 1);
   --inner-width: calc(var(--width) + 4px + var(--gap));
   --inner-height: calc(((var(--height) + var(--gap)) * var(--size, 1)) - var(--gap));
@@ -163,6 +164,10 @@ header #value {
   height: calc(var(--inner-height) - var(--inner-gap));
 }
 
+.match.completed {
+  --border-color: lightgrey;
+}
+
 .match.completed[data-next-side=blue] {
   --line-color: blue;
 }
@@ -187,7 +192,7 @@ header #value {
 
 .match-inner {
   background-color: white;
-  border: 2px solid grey;
+  border: 2px solid var(--border-color);
   border-radius: .4rem;
   margin: var(--margin) 0;
   width: var(--width);
@@ -199,7 +204,7 @@ header #value {
   margin: 0;
   width: 1em;
   line-height: 1em;
-  border: 2px solid grey;
+  border: 2px solid var(--border-color);
   text-align: center;
   font-variant-numeric: proportional-nums;
   background-color: white;
