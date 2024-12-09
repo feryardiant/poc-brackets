@@ -264,6 +264,8 @@ function winnerSelected($el, match, winner, rounds) {
     enableParties($round.nextElementSibling)
   }
 
+  $el.offsetParent.classList.add('completed')
+
   // Mark the opponent as loser
   $el.offsetParent.querySelector(
     `div[data-side=${flipSide(winner.side)}]`,
