@@ -1,12 +1,27 @@
 {
-  "name": "knockout-chart",
+  "name": "@feryardiant/tourney",
   "type": "module",
   "version": "0.2.1",
   "description": "Knockout Chart",
   "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
   "license": "MIT",
-  "main": "lib/main.js",
+  "homepage": "https://github.com/feryardiant/poc-brackets#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/feryardiant/poc-brackets.git"
+  },
+  "bugs": {
+    "url": "https://github.com/feryardiant/poc-brackets/issues"
+  },
+  "exports": {
+    ".": "./lib/rounds.js",
+    "./matches.js": "./lib/matches.js",
+    "./parties.js": "./lib/parties.js"
+  },
   "types": "lib/tipes.d.ts",
+  "files": [
+    "lib/*"
+  ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

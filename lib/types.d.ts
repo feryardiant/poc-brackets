@@ -1,48 +1,20 @@
+export type { Match, MatchNext } from './matches'
+export type { MatchSided, Party } from './parties'
+export type { Round } from './rounds'
+
 export type Side = 'blue' | 'red'
 
-export interface Party {
-  id: number
-  name: string
-  round: number
-  side: Side
-  match?: MatchPrev
-  order?: number
-  continent?: string
-}
-
-interface BaseMatch {
+export interface MatchPrev {
   id: number
   round: number
-  next: MatchNext
-  singular: boolean
   size: number
   span: number
-}
-
-export interface Match extends BaseMatch {
-  bye: boolean
-  parties: Party[]
-  hidden: boolean
-}
-
-export interface MatchPrev extends BaseMatch {
   index: number
 }
 
-export interface MatchNext {
-  round: number
-  side: Side
-  span: number
-}
-
-export interface MatchSided {
-  index: number
-  blue: Party
-  red: Party
-}
-
-export interface Round {
-  id: number
-  matches: Match[]
-  parties: Party[]
+declare global {
+  interface GlobalEventHandlersEventMap {
+    'assign-winner': CustomEvent<Party>
+    'knockoff': CustomEvent<null>
+  }
 }

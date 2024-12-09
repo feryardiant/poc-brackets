@@ -114,6 +114,7 @@ header #value {
 
 .match {
   --vheight: 50%;
+  --border-color: grey;
   --round-id: calc(var(--curr-round) + 1);
   --inner-width: calc(var(--width) + 4px + var(--gap));
   --inner-height: calc(((var(--height) + var(--gap)) * var(--size, 1)) - var(--gap));
@@ -135,12 +136,14 @@ header #value {
 }
 
 .match:before {
-  width: 8px;
-  top: calc(50% - (8px / 2));
-  right: -4px;
-  background-color: grey;
+  --size: 5px;
+  --half: calc(var(--size) / 2);
+  width: var(--size);
+  top: calc(50% - var(--half));
+  right: calc(var(--half) * -1);
+  background-color: var(--line-color, grey);
   border-radius: 50%;
-  height: 8px;
+  height: var(--size);
   z-index: 2;
 }
 
@@ -152,48 +155,58 @@ header #value {
   width: var(--hline);
   height: var(--vline);
   right: calc(var(--hline) * -1);
-  border: 0 solid grey;
+  border: 0 solid var(--line-color, grey);
   border-right-width: 2px;
   border-radius: 4px;
 }
 
 .match.odd {
-  /* --inner-gap: calc((var(--height) + var(--gap)) / 2); */
-  /* margin-top: var(--inner-gap); */
-  /* height: calc(var(--inner-height) - var(--inner-gap)); */
+  --inner-gap: calc((var(--height) + var(--gap)) / 2);
+  margin-bottom: var(--inner-gap);
+  height: calc(var(--inner-height) - var(--inner-gap));
+}
+
+.match[aria-disabled=true] {
+  --border-color: lightgrey;
+  --line-color: lightgrey;
+}
+
+.match.proceed[data-next-side=blue] {
+  --line-color: blue;
+}
+
+.match.proceed[data-next-side=red] {
+  --line-color: red;
 }
 
 .match[data-next-side=blue]:after {
   top: calc(50% - 1px);
   border-top-width: 2px;
-  /* border-color: blue; */
 }
 
 .match[data-next-side=red]:after {
   bottom: calc(50% - 1px);
   border-bottom-width: 2px;
-  /* border-color: red; */
 }
 
-.match.odd[data-next-side=red]:after {
-  --vheight: 60%;
+.match.odd[data-next-side=blue]:after {
+  --vheight: 70%;
 }
 
 .match-inner {
   background-color: white;
-  border: 2px solid grey;
-  border-radius: .4rem;
   margin: var(--margin) 0;
   width: var(--width);
+  gap: 3px;
 }
 
 .match-title {
   position: absolute;
-  padding: 3px;
+  padding: 4px 3px 2px;
   margin: 0;
   width: 1em;
   line-height: 1em;
-  border: 2px solid grey;
+  border: 2px solid var(--border-color);
   text-align: center;
   font-variant-numeric: proportional-nums;
   background-color: white;
@@ -204,33 +217,51 @@ header #value {
 
 .party {
   display: flex;
-  border-bottom: 1px solid #bfbfbf;
-  padding: .3em .4em .3em 1.2em;
+  border: 2px solid var(--border-color);
+  border-radius: .4rem;
+  padding: .2rem .4em .2rem 1.2em;
   list-style: none;
   line-height: 1em;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
+  outline: 2px solid white;
+  cursor: pointer;
+}
+
+.match.completed .party {
+  cursor: not-allowed;
 }
 
 .party-label {
+  display: flex;
+  flex-direction: column;
+}
+
+.party-check {
+  margin: 0;
+}
+
+.party-name, .party-continent {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  line-height: 1.2em;
 }
 
-.party[data-side=blue] {
+.party-continent {
+  font-size: .8rem;;
+  color: grey;
+}
+
+.party[data-side=blue] .party-name {
   color: blue;
 }
 
-.party[data-side=red] {
+.party[data-side=red] .party-name {
   color: red;
 }
 
-.party.loser {
+.party.loser span {
   text-decoration: line-through;
-  color: gray;
-}
-
-.match-inner .party:last-child {
-  border-bottom-width: 0;
+  color: grey !important;
 }

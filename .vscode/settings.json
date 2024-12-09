@@ -3,5 +3,8 @@
     "source.fixAll.eslint": "explicit"
   },
   "editor.formatOnSave": false,
-  "eslint.useFlatConfig": true
+  "eslint.useFlatConfig": true,
+  "files.associations": {
+    "*.css": "css"
+  }
 }
