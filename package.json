@@ -5,7 +5,11 @@
   "description": "Knockout Chart",
   "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
   "license": "MIT",
-  "main": "lib/main.js",
+  "exports": {
+    ".": "./lib/rounds.js",
+    "./matches.js": "./lib/matches.js",
+    "./parties.js": "./lib/parties.js"
+  },
   "types": "lib/tipes.d.ts",
   "scripts": {
     "lint": "eslint .",

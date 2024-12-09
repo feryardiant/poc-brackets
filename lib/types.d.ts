@@ -1,14 +1,8 @@
-export type Side = 'blue' | 'red'
+export type { Match, MatchNext } from './matches'
+export type { MatchSided, Party } from './parties'
+export type { Round } from './rounds'
 
-export interface Party {
-  id: number
-  name: string
-  round: number
-  side: Side
-  match?: MatchPrev
-  order?: number
-  continent?: string
-}
+export type Side = 'blue' | 'red'
 
 interface BaseMatch {
   id: number
@@ -19,30 +13,6 @@ interface BaseMatch {
   span: number
 }
 
-export interface Match extends BaseMatch {
-  bye: boolean
-  parties: Party[]
-  hidden: boolean
-}
-
 export interface MatchPrev extends BaseMatch {
   index: number
-}
-
-export interface MatchNext {
-  round: number
-  side: Side
-  span: number
-}
-
-export interface MatchSided {
-  index: number
-  blue: Party
-  red: Party
-}
-
-export interface Round {
-  id: number
-  matches: Match[]
-  parties: Party[]
 }
