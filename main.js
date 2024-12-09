@@ -27,10 +27,10 @@ import { generateRounds } from './lib/rounds.js'
       const $hint = document.querySelector(`${target}-hint`)
 
       if ($target.getAttribute('aria-hidden') === 'true') {
-        $target.setAttribute('aria-hidden', 'false')
-        $hint.setAttribute('aria-hidden', 'false')
-        document.getElementById(flip[target]).setAttribute('aria-hidden', 'true')
-        document.getElementById(`${flip[target]}-hint`).setAttribute('aria-hidden', 'true')
+        $target.ariaHidden = false
+        $hint.ariaHidden = false
+        document.getElementById(flip[target]).ariaHidden = true
+        document.getElementById(`${flip[target]}-hint`).ariaHidden = true
       }
     })
   }
@@ -130,22 +130,22 @@ function render($chart, parties) {
   for (const roundId in rounds) {
     const round = rounds[roundId]
 
-    const $section = document.createElement('section')
+    const $round = document.createElement('section')
     const $title = document.createElement('h3')
     const $matches = document.createElement('div')
 
-    $section.id = `round-${roundId}`
+    $round.id = `round-${roundId}`
+    $title.id = `${$round.id}-title`
     $title.textContent = `Round ${roundId}`
-    $title.id = `${$section.id}-title`
 
-    $section.setAttribute('aria-labelledby', $title.id)
-    $section.classList.add('rounds')
-    $section.style.setProperty('--curr-round', roundId)
+    $round.setAttribute('aria-labelledby', $title.id)
+    $round.classList.add('rounds')
+    $round.style.setProperty('--curr-round', roundId)
 
     $matches.classList.add('matches')
     $matches.style.setProperty('--grid', round.matches.length)
 
-    $section.append($title)
+    $round.append($title)
 
     for (const match of round.matches) {
       const $match = document.createElement('div')
@@ -153,7 +153,7 @@ function render($chart, parties) {
       $match.classList.add('match')
 
       if (match.hidden) {
-        $match.setAttribute('aria-hidden', 'true')
+        $match.ariaHidden = true
         $matches.append($match)
 
         continue
@@ -187,13 +187,13 @@ function render($chart, parties) {
       $matchInner.id = `${$match.id}-inner`
 
       $matchTitle.textContent = match.id
+      $matchTitle.ariaLabel = `Round ${round.id} Match ${match.id}`
+      $matchTitle.ariaDescription = `${$matchTitle.ariaLabel} of ${match.label}`
       $matchTitle.classList.add('match-title')
-      $matchTitle.setAttribute('aria-label', `Round ${round.id} Match ${match.id}`)
-      $matchTitle.setAttribute('aria-description', `Round ${round.id} Match ${match.id} of ${match.label}`)
 
+      $matchInner.role = 'radiogroup'
+      $matchInner.ariaLabel = match.label
       $matchInner.classList.add('match-inner')
-      $matchInner.setAttribute('aria-label', match.label)
-      $matchInner.setAttribute('role', 'radiogroup')
 
       $match.setAttribute('aria-labelledby', $matchTitle.id)
       $match.setAttribute('aria-describedby', $match.id)
@@ -210,10 +210,12 @@ function render($chart, parties) {
         $participant.title = party.name
 
         $name.id = `${$participant.id}-name`
-        $name.textContent = party.name
+        $name.textContent = $name.ariaLabel = party.name
+        $name.classList.add('party-name')
 
         $continent.id = `${$participant.id}-continent`
-        $continent.textContent = party.continent || '...'
+        $continent.textContent = $continent.ariaLabel = party.continent || '...'
+        $continent.classList.add('party-continent')
 
         $check.type = 'radio'
         $check.name = $matchInner.id
@@ -223,11 +225,6 @@ function render($chart, parties) {
         if (round.id > 1) {
           $check.disabled = true
         }
-
-        $name.classList.add('party-name')
-        $name.setAttribute('aria-label', party.name)
-        $continent.classList.add('party-continent')
-        $continent.setAttribute('aria-label', party.continent)
 
         $label.append($name, $continent)
         $label.classList.add('party-label')
@@ -241,10 +238,10 @@ function render($chart, parties) {
           winnerSelected(e.target, match, winner, rounds)
         })
 
+        $participant.htmlFor = $check.id
+        $participant.ariaLabel = party.label
         $participant.classList.add('party')
-        $participant.setAttribute('for', $check.id)
         $participant.setAttribute('data-side', party.side)
-        $participant.setAttribute('aria-label', party.label)
         $participant.addEventListener('assign-winner', (e) => {
           /** @type {import('./lib/parties').Party} */
           const winner = e.detail
@@ -262,8 +259,8 @@ function render($chart, parties) {
       $matches.append($match)
     }
 
-    $section.append($matches)
-    $chart.append($section)
+    $round.append($matches)
+    $chart.append($round)
   }
 }
 

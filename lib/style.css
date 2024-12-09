@@ -166,8 +166,9 @@ header #value {
   height: calc(var(--inner-height) - var(--inner-gap));
 }
 
-.match.proceed {
+.match[aria-disabled=true] {
   --border-color: lightgrey;
+  --line-color: lightgrey;
 }
 
 .match.proceed[data-next-side=blue] {
