@@ -11,3 +11,10 @@ export interface MatchPrev {
   span: number
   index: number
 }
+
+declare global {
+  interface GlobalEventHandlersEventMap {
+    'assign-winner': CustomEvent<Party>
+    'knockoff-party': CustomEvent<null>
+  }
+}
