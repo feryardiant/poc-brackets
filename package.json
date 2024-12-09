@@ -20,7 +20,7 @@
   },
   "types": "lib/tipes.d.ts",
   "files": [
-    "./lib/*"
+    "lib/*"
   ],
   "scripts": {
     "lint": "eslint .",

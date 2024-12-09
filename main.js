@@ -187,23 +187,33 @@ function render($chart, parties) {
       $matchInner.id = `${$match.id}-inner`
 
       $matchTitle.textContent = match.id
-      $matchTitle.setAttribute('aria-label', `Match ${match.id}`)
       $matchTitle.classList.add('match-title')
+      $matchTitle.setAttribute('aria-label', `Round ${round.id} Match ${match.id}`)
+      $matchTitle.setAttribute('aria-description', `Round ${round.id} Match ${match.id} of ${match.label}`)
+
       $matchInner.classList.add('match-inner')
+      $matchInner.setAttribute('aria-label', match.label)
+      $matchInner.setAttribute('role', 'radiogroup')
 
       $match.setAttribute('aria-labelledby', $matchTitle.id)
+      $match.setAttribute('aria-describedby', $match.id)
       $match.append($matchTitle)
 
       for (const party of match.parties) {
-        const $participant = document.createElement('div')
-        const $label = document.createElement('label')
+        const $participant = document.createElement('label')
+        const $label = document.createElement('div')
+        const $name = document.createElement('span')
+        const $continent = document.createElement('span')
         const $check = document.createElement('input')
 
         $participant.id = `${$match.id}-${party.side}`
         $participant.title = party.name
 
-        $label.id = `${$participant.id}-label`
-        $label.textContent = party.name
+        $name.id = `${$participant.id}-name`
+        $name.textContent = party.name
+
+        $continent.id = `${$participant.id}-continent`
+        $continent.textContent = party.continent || '...'
 
         $check.type = 'radio'
         $check.name = $matchInner.id
@@ -214,10 +224,16 @@ function render($chart, parties) {
           $check.disabled = true
         }
 
+        $name.classList.add('party-name')
+        $name.setAttribute('aria-label', party.name)
+        $continent.classList.add('party-continent')
+        $continent.setAttribute('aria-label', party.continent)
+
+        $label.append($name, $continent)
         $label.classList.add('party-label')
-        $label.setAttribute('for', $check.id)
 
         $check.classList.add('party-check')
+        $check.setAttribute('aria-describedby', $match.id)
         $check.addEventListener('change', (e) => {
           const partyId = Number(e.target.value)
           const winner = match.parties.find(party => party.id === partyId)
@@ -226,8 +242,17 @@ function render($chart, parties) {
         })
 
         $participant.classList.add('party')
+        $participant.setAttribute('for', $check.id)
         $participant.setAttribute('data-side', party.side)
-        $participant.setAttribute('aria-labelledby', $label.id)
+        $participant.setAttribute('aria-label', party.label)
+        $participant.addEventListener('assign-winner', (e) => {
+          /** @type {import('./lib/parties').Party} */
+          const winner = e.detail
+
+          $check.value = party.id = winner.id
+          $name.textContent = party.name = winner.name
+          $continent.textContent = party.continent = winner.continent
+        })
 
         $participant.append($label, $check)
         $matchInner.append($participant)
@@ -264,11 +289,12 @@ function winnerSelected($el, match, winner, rounds) {
     enableParties($round.nextElementSibling)
   }
 
-  $el.offsetParent.classList.add('completed')
+  $el.offsetParent.classList.add('proceed')
+  $el.offsetParent.ariaDisabled = true
 
   // Mark the opponent as loser
   $el.offsetParent.querySelector(
-    `div[data-side=${flipSide(winner.side)}]`,
+    `[data-side=${flipSide(winner.side)}]`,
   ).classList.add('loser')
 
   if (!nextRound) {
@@ -281,12 +307,12 @@ function winnerSelected($el, match, winner, rounds) {
   const party = nextMatch.findParty(match)
   // Find target party element
   const $party = document.getElementById(
-    `round-${party.round}-match-${nextMatch.id}-inner`,
-  ).children.item(party.side === 'blue' ? 0 : 1)
+    `round-${party.round}-match-${nextMatch.id}-${party.side}`,
+  )
 
-  // Update target party instance
-  $party.children.item(0).textContent = party.name = winner.name
-  $party.children.item(1).value = party.id = winner.id
+  $party.dispatchEvent(new CustomEvent('assign-winner', {
+    detail: winner,
+  }))
 }
 
 /**
