@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/feryardiant/poc-brackets/compare/v0.2.1...v0.3.0) (2024-12-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* uses native js classes for `Round`, `Match` and `Party`
+instead of just type definitions
+
+Signed-off-by: Fery Wardiyanto <ferywardiyanto@gmail.com>
+* simplify match creation method and enhance accessibilities
+
+### Features
+
+* add `label` property (readonly) ([67d06da](https://github.com/feryardiant/poc-brackets/commit/67d06da34e9fca551b5e053d8d988f5d3aa62d1b))
+* add `label` property (readonly) on `Match` class ([c9cb0be](https://github.com/feryardiant/poc-brackets/commit/c9cb0bee2a1a817a5fb9150296d94842324d04ee))
+* add ability to `knock-off` the opponent ([fe57a0c](https://github.com/feryardiant/poc-brackets/commit/fe57a0caa700ee90d34b22deae5d16f7084ca3d4)), closes [/github.com/feryardiant/poc-brackets/pull/20#issuecomment-2529495693](https://github.com/feryardiant//github.com/feryardiant/poc-brackets/pull/20/issues/issuecomment-2529495693)
+* rearrange `render` method to clean up the outputs ([f190a86](https://github.com/feryardiant/poc-brackets/commit/f190a8603a2f5ef84eaf7effb5801ebee95672ca))
+* refactor entire codebase ([#20](https://github.com/feryardiant/poc-brackets/issues/20)) ([adf8ce7](https://github.com/feryardiant/poc-brackets/commit/adf8ce7258769f141673b513fc586a1d664c62e6))
+* simplify match creation method and enhance accessibilities ([f3d7ee0](https://github.com/feryardiant/poc-brackets/commit/f3d7ee0ab6db05d550a7123e15638f014f7d43f3))
+
+
+* rewrite entire codebase ([88ebdec](https://github.com/feryardiant/poc-brackets/commit/88ebdec02c5554dbeadff4b5aca1424e0508b7ac))
+
 ### [0.2.1](https://github.com/feryardiant/poc-brackets/compare/v0.2.0...v0.2.1) (2024-12-07)
 
 
