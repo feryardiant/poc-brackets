@@ -15,6 +15,6 @@ export interface MatchPrev {
 declare global {
   interface GlobalEventHandlersEventMap {
     'assign-winner': CustomEvent<Party>
-    'knockoff-party': CustomEvent<null>
+    'knockoff': CustomEvent<null>
   }
 }

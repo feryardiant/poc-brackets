@@ -238,12 +238,17 @@ function render($chart, parties) {
           winnerSelected(e.target, match, winner, rounds)
         })
 
+        if (party.match.id) {
+          const originMatch = `round-${party.match.round}-match-${party.match.id}`
+
+          $participant.setAttribute('data-origin', originMatch)
+        }
+
         $participant.htmlFor = $check.id
         $participant.ariaLabel = party.label
         $participant.classList.add('party')
         $participant.setAttribute('data-side', party.side)
         $participant.addEventListener('assign-winner', (e) => {
-          /** @type {import('./lib/parties').Party} */
           const winner = e.detail
 
           $check.value = party.id = winner.id
@@ -254,6 +259,16 @@ function render($chart, parties) {
         $participant.append($label, $check)
         $matchInner.append($participant)
       }
+
+      $match.addEventListener('knockoff', (e) => {
+        /** @type {HTMLDivElement} */
+        const $el = e.target
+
+        $el.classList.remove('proceed')
+
+        // Knock-off the opponent
+        knockOff($el.querySelector('.party:not(.loser)'))
+      })
 
       $match.append($matchInner)
       $matches.append($match)
@@ -271,12 +286,13 @@ function render($chart, parties) {
  * @param {Round[]} rounds
  */
 function winnerSelected($el, match, winner, rounds) {
-  const $matches = $el.offsetParent.parentElement
+  const $match = $el.offsetParent
+  const $matches = $match.parentElement
   const $parties = $matches.querySelectorAll('input[type="radio"]')
   const nextRound = rounds[match.next.round]
 
   // Disable all radio buttons in current match
-  enableParties($el.offsetParent, false)
+  enableParties($match, false)
 
   // Check if all match in the round already finish
   if (Array.from($parties).every($radio => $radio.disabled)) {
@@ -286,13 +302,11 @@ function winnerSelected($el, match, winner, rounds) {
     enableParties($round.nextElementSibling)
   }
 
-  $el.offsetParent.classList.add('proceed')
-  $el.offsetParent.ariaDisabled = true
+  $match.classList.add('proceed')
+  $match.ariaDisabled = true
 
-  // Mark the opponent as loser
-  $el.offsetParent.querySelector(
-    `[data-side=${flipSide(winner.side)}]`,
-  ).classList.add('loser')
+  // Knock-off the opponent
+  knockOff($match.querySelector(`[data-side=${flipSide(winner.side)}]`))
 
   if (!nextRound) {
     return
@@ -310,6 +324,22 @@ function winnerSelected($el, match, winner, rounds) {
   $party.dispatchEvent(new CustomEvent('assign-winner', {
     detail: winner,
   }))
+}
+
+/**
+ * @param {HTMLDivElement} $opponent
+ */
+function knockOff($opponent) {
+  const originMatch = $opponent.getAttribute('data-origin')
+
+  // Mark the opponent as loser
+  $opponent.classList.add('loser')
+
+  if (originMatch) {
+    const $originMatch = document.getElementById(originMatch)
+
+    $originMatch.dispatchEvent(new CustomEvent('knockoff'))
+  }
 }
 
 /**
