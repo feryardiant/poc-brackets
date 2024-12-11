@@ -20,6 +20,7 @@ Desktop.ini
 .php-version
 .tool-versions
 lcov.info
+junit.xml
 
 # Dependency folders
 # --------------------------
