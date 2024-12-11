@@ -19,6 +19,7 @@ Desktop.ini
 # --------------------------
 .php-version
 .tool-versions
+lcov.info
 
 # Dependency folders
 # --------------------------
