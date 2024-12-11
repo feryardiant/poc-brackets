@@ -32,15 +32,15 @@ kbd {
 
 #options {
   width: 300px;
-}
 
-#options #selector {
-  margin-bottom: 1em;
-}
+  & #selector {
+    margin-bottom: 1em;
+  }
 
-#options #selector,
-#options .option {
-  width: 100%;
+  & #selector,
+  & .option {
+    width: 100%;
+  }
 }
 
 [aria-hidden=true] {
@@ -63,15 +63,15 @@ p[aria-hidden=false] {
 #slider {
   gap: 3px;
   justify-items: baseline;
-}
 
-#slider input[type=range] {
-  flex-grow: 1;
-}
+  input[type=range] {
+    flex-grow: 1;
+  }
 
-#slider > * {
-  line-height: 1em;
-  margin: 0;
+  & > * {
+    line-height: 1em;
+    margin: 0;
+  }
 }
 
 header #value {
@@ -82,11 +82,11 @@ header #value {
   display: flex;
   padding-bottom: 1em;
   overflow-x: scroll;
-}
 
-#chart h3 {
-  margin: 0;
-  padding: .5em 0 0;
+  h3 {
+    margin: 0;
+    padding: .5em 0 0;
+  }
 }
 
 .rounds, .match-inner {
@@ -98,10 +98,10 @@ header #value {
   gap: 1em;
   padding: 0 1em 1em 1.4em;
   border-left: 2px dashed lightgrey;
-}
 
-.rounds:first-child {
-  border-left-width: 0;
+  &:first-child {
+    border-left-width: 0;
+  }
 }
 
 .matches {
@@ -118,6 +118,7 @@ header #value {
   --round-id: calc(var(--curr-round) + 1);
   --inner-width: calc(var(--width) + 4px + var(--gap));
   --inner-height: calc(((var(--height) + var(--gap)) * var(--size, 1)) - var(--gap));
+  --line-width: 2px;
   box-sizing: border-box;
   margin-bottom: calc((var(--height) + var(--gap)) * var(--span, 0));
   padding: 0;
@@ -126,71 +127,75 @@ header #value {
   align-items: center;
   isolation: isolate;
   height: var(--inner-height);
-}
 
-.match:not(.final-round):not([aria-hidden=true]):before,
-.match:not(.final-round):not([aria-hidden=true]):after {
-  --middle: calc(50% - (var(--height) / 2));
-  content: '';
-  position: absolute;
-}
+  &:not(.final-round):not([aria-hidden=true]):before,
+  &:not(.final-round):not([aria-hidden=true]):after {
+    --middle: calc(50% - (var(--height) / 2));
+    content: '';
+    position: absolute;
+  }
 
-.match:before {
-  --size: 5px;
-  --half: calc(var(--size) / 2);
-  width: var(--size);
-  top: calc(50% - var(--half));
-  right: calc(var(--half) * -1);
-  background-color: var(--line-color, grey);
-  border-radius: 50%;
-  height: var(--size);
-  z-index: 2;
-}
+  &:before {
+    --size: 5px;
+    --half: calc(var(--size) / 2);
+    width: var(--size);
+    top: calc(50% - var(--half));
+    right: calc(var(--half) * -1);
+    background-color: var(--line-color, grey);
+    border-radius: 50%;
+    height: var(--size);
+    z-index: 2;
+  }
 
-.match:after {
-  --target: calc(var(--next-round) - var(--curr-round));
-  --outer-width: calc(var(--inner-width) + ((var(--gap) - 6.3px) * var(--target)));
-  --hline: calc(var(--outer-width) * var(--target) - (var(--outer-width) / 2));
-  --vline: calc(var(--vheight) + (var(--gap) * var(--target)));
-  width: var(--hline);
-  height: var(--vline);
-  right: calc(var(--hline) * -1);
-  border: 0 solid var(--line-color, grey);
-  border-right-width: 2px;
-  border-radius: 4px;
-}
+  &:after {
+    --target: calc(var(--next-round) - var(--curr-round));
+    --outer-width: calc(var(--inner-width) + ((var(--gap) - 6.3px) * var(--target)));
+    --hline: calc(var(--outer-width) * var(--target) - (var(--outer-width) / 2));
+    --vline: calc(var(--vheight) + (var(--gap) * var(--target)));
+    width: var(--hline);
+    height: var(--vline);
+    right: calc(var(--hline) * -1);
+    border: 0 solid var(--line-color, grey);
+    border-right-width: var(--line-width);
+    border-radius: 4px;
+  }
 
-.match.odd {
-  --inner-gap: calc((var(--height) + var(--gap)) / 2);
-  margin-bottom: var(--inner-gap);
-  height: calc(var(--inner-height) - var(--inner-gap));
-}
+  &[aria-disabled=true] {
+    --border-color: lightgrey;
+    --line-color: lightgrey;
+  }
 
-.match[aria-disabled=true] {
-  --border-color: lightgrey;
-  --line-color: lightgrey;
-}
+  &[data-next-side=blue] {
+    &.proceed {
+      --line-color: blue;
+    }
 
-.match.proceed[data-next-side=blue] {
-  --line-color: blue;
-}
+    &:after {
+      top: calc(50% - 1px);
+      border-top-width: var(--line-width);
+    }
+  }
 
-.match.proceed[data-next-side=red] {
-  --line-color: red;
-}
+  &[data-next-side=red] {
+    &.proceed {
+      --line-color: red;
+    }
 
-.match[data-next-side=blue]:after {
-  top: calc(50% - 1px);
-  border-top-width: 2px;
-}
+    &:after {
+      bottom: calc(50% - 1px);
+      border-bottom-width: var(--line-width);
+    }
+  }
 
-.match[data-next-side=red]:after {
-  bottom: calc(50% - 1px);
-  border-bottom-width: 2px;
-}
+  &.odd {
+    --inner-gap: calc((var(--height) + var(--gap)) / 2);
+    margin-bottom: var(--inner-gap);
+    height: calc(var(--inner-height) - var(--inner-gap));
 
-.match.odd[data-next-side=blue]:after {
-  --vheight: 70%;
+    &[data-next-side=blue]:after {
+      --vheight: 70%;
+    }
+  }
 }
 
 .match-inner {
@@ -226,6 +231,19 @@ header #value {
   align-items: center;
   outline: 2px solid white;
   cursor: pointer;
+
+  &[data-side=blue] .party-name {
+    color: blue;
+  }
+
+  &[data-side=red] .party-name {
+    color: red;
+  }
+
+  &.loser span {
+    text-decoration: line-through;
+    color: grey !important;
+  }
 }
 
 .match.completed .party {
@@ -251,17 +269,4 @@ header #value {
 .party-continent {
   font-size: .8rem;;
   color: grey;
-}
-
-.party[data-side=blue] .party-name {
-  color: blue;
-}
-
-.party[data-side=red] .party-name {
-  color: red;
-}
-
-.party.loser span {
-  text-decoration: line-through;
-  color: grey !important;
 }
