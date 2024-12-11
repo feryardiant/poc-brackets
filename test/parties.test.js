@@ -1,7 +1,7 @@
 'use strict'
 
 import { assert, describe, it } from 'vitest'
-import { generateParties, Party } from './parties.js'
+import { generateParties, Party } from '../lib/parties.js'
 
 describe('parties', () => {
   it('dummy parties test', () => {

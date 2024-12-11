@@ -1,8 +1,8 @@
 'use strict'
 
 import { assert, describe, it } from 'vitest'
-import { createMatches, Match, matchmakingParties } from './matches.js'
-import { generateParties } from './parties.js'
+import { createMatches, Match, matchmakingParties } from '../lib/matches.js'
+import { generateParties } from '../lib/parties.js'
 
 describe('matches', () => {
   it('dummy matches test', () => {
