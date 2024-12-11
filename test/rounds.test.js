@@ -6,7 +6,7 @@ import { generateRounds, Round } from '../lib/rounds.js'
 
 describe('rounds', () => {
   it('dummy rounds test', () => {
-    const parties = generateParties(3)
+    const parties = generateParties(9)
     const rounds = generateRounds(parties)
 
     assert.equal(rounds.every(r => r instanceof Round), true)
