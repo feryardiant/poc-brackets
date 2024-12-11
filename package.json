@@ -20,13 +20,15 @@
   },
   "types": "lib/tipes.d.ts",
   "files": [
+    "!lib/*.test.js",
     "lib/*"
   ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "postinstall": "simple-git-hooks",
-    "release": "standard-version -s"
+    "release": "standard-version -s",
+    "test": "node --test --experimental-test-coverage"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",

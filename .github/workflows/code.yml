@@ -23,3 +23,11 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Test
+        run: npm test -- --test-reporter=lcov --test-reporter-destination=lcov.info
+
+      - name: Reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
