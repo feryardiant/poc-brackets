@@ -27,7 +27,7 @@ jobs:
         run: npm run lint
 
       - name: Test
-        run: npm test -- --test-reporter=junit --test-reporter-destination=junit.xml
+        run: npm test -- --test-reporter=lcov --test-reporter-destination=lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
