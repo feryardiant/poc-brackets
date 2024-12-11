@@ -21,6 +21,7 @@ Desktop.ini
 .tool-versions
 lcov.info
 junit.xml
+*.junit.xml
 
 # Dependency folders
 # --------------------------
