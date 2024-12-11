@@ -19,8 +19,10 @@ Desktop.ini
 # --------------------------
 .php-version
 .tool-versions
-lcov.info
+coverage
+*.junit.xml
 junit.xml
+lcov.info
 
 # Dependency folders
 # --------------------------

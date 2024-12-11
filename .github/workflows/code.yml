@@ -27,9 +27,15 @@ jobs:
         run: npm run lint
 
       - name: Test
-        run: npm test -- --test-reporter=lcov --test-reporter-destination=lcov.info
+        run: npm test -- --reporter=junit --outputFile=reports.junit.xml
 
-      - name: Reports to Codecov
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
