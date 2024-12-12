@@ -1,5 +1,5 @@
-export type { Match, MatchNext } from './matches'
-export type { MatchSided, Party } from './parties'
+export type { Match, MatchNext, Matchup } from './matches'
+export type { Party } from './parties'
 export type { Round } from './rounds'
 
 export type Side = 'blue' | 'red'
