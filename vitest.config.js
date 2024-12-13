@@ -5,5 +5,9 @@ export default defineConfig({
     coverage: {
       exclude: ['main.js', ...coverageConfigDefaults.exclude],
     },
+    reporters: [
+      'default',
+      ['junit', { outputFile: 'reports.junit.xml' }],
+    ],
   },
 })
