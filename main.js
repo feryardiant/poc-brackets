@@ -1,4 +1,4 @@
-import { determinePartiesSide, generateParties } from './lib/parties.js'
+import { determinePartiesSide, generateParties, Party } from './lib/parties.js'
 import { generateRounds } from './lib/rounds.js'
 
 (function main() {
@@ -39,12 +39,16 @@ import { generateRounds } from './lib/rounds.js'
     const reader = new FileReader()
 
     reader.onload = (ev) => {
-      const parties = parseCsv(ev.target.result)
+      let parties = parseCsv(ev.target.result)
 
-      if (!validate(parties.length)) {
+      if (!validate(parties.length) || !parties.every(p => 'name' in p && 'continent' in p)) {
         // eslint-disable-next-line no-alert
-        return alert('Invalid party size')
+        return alert('Invalid party data')
       }
+
+      parties = parties.map((party) => {
+        return new Party(party.name, party.order, party.continent)
+      })
 
       url.searchParams.delete('players')
       history.pushState({}, null, url)
@@ -108,7 +112,7 @@ function parseCsv(csv) {
     }
 
     columns.forEach((col, i) => {
-      obj[heading[i]] = /\d/.test(col) ? Number(col) : col
+      obj[heading[i]] = /^\d$/.test(col) ? Number(col) : col
     })
 
     returns.push(obj)
