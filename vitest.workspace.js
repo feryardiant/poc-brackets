@@ -13,40 +13,20 @@ export default defineWorkspace([
       name: 'unit',
     },
   },
-  () => {
-    // const env = loadEnv(mode, process.cwd(), ['BROWSERSTACK'])
-    // let headless = process.env.CI
-    // const inBrowserStack = !!env.BROWSERSTACK_USERNAME && !!env.BROWSERSTACK_ACCESS_KEY
-
-    // if (inBrowserStack) {
-    //   headless = false
-    // }
-
-    return {
-      extends: 'vitest.config.js',
-      test: {
-        browser: {
-          enabled: true,
-          // headless,
-          name: 'chrome',
-          provider: 'webdriverio',
-          // providerOptions: inBrowserStack
-          //   ? {
-          //       user: env.BROWSERSTACK_USERNAME,
-          //       key: env.BROWSERSTACK_ACCESS_KEY,
-          //       services: ['browserstack', {
-          //         browserstackLocal: true,
-          //       }],
-          //     }
-          //   : {},
-          testerHtmlPath: './index.html',
-          viewport: { width: 1000, height: 1200 },
-        },
-        include: [
-          'test/browser.test.js',
-        ],
-        name: 'browser',
+  {
+    extends: 'vitest.config.js',
+    test: {
+      browser: {
+        enabled: true,
+        name: 'chrome',
+        provider: 'webdriverio',
+        testerHtmlPath: './index.html',
+        viewport: { width: 1000, height: 1200 },
       },
-    }
+      include: [
+        'test/browser.test.js',
+      ],
+      name: 'browser',
+    },
   },
 ])
