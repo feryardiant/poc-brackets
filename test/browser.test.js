@@ -2,14 +2,9 @@
 // @vitest-environment jsdom
 
 import { } from '@vitest/browser/context'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-describe('browser', () => {
-  beforeEach(async () => {
-    // await import('../lib/style.css')
-    // await import('../main.js')
-  })
-
+describe('interactivity', () => {
   it('dummy', () => {
     expect(typeof window).not.toBe('undefined')
   })

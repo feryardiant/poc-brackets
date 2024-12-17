@@ -29,7 +29,8 @@
     "postinstall": "simple-git-hooks",
     "release": "standard-version -s",
     "test": "vitest run --workspace=vitest.workspace.js --coverage",
-    "test:browser": "vitest --workspace=vitest.workspace.js"
+    "test:browser": "npm test -- --project browser",
+    "test:unit": "npm test -- --project unit"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",
@@ -37,6 +38,7 @@
     "@commitlint/config-conventional": "^19.6.0",
     "@vitest/browser": "^2.1.8",
     "@vitest/coverage-istanbul": "^2.1.8",
+    "@wdio/browserstack-service": "^9.4.2",
     "eslint": "^9.16.0",
     "lint-staged": "^15.2.10",
     "simple-git-hooks": "^2.11.1",
