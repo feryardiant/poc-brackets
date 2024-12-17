@@ -10,6 +10,7 @@ export default defineConfig({
     },
     coverage: {
       exclude: ['main.js', ...coverageConfigDefaults.exclude],
+      provider: 'istanbul',
     },
     reporters: [
       'default',
