@@ -22,6 +22,9 @@ export default defineWorkspace([
         provider: 'webdriverio',
         testerHtmlPath: './index.html',
         viewport: { width: 1000, height: 1200 },
+        locators: {
+          testIdAttribute: 'id',
+        },
       },
       include: [
         'test/browser.test.js',
