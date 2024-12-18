@@ -30,7 +30,8 @@
     "release": "standard-version -s",
     "test": "vitest run --workspace=vitest.workspace.js --coverage",
     "test:browser": "npm test -- --project browser",
-    "test:unit": "npm test -- --project unit"
+    "test:unit": "npm test -- --project unit",
+    "watch": "vitest --workspace=vitest.workspace.js"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",
