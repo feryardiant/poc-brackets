@@ -9,7 +9,7 @@ The main goal of this project is to learn how generate single-elimination tourna
 
 ## Demo
 
-URL: https://feryardiant.id/poc-brackets
+URL: https://poc-brackets.feryardiant.id
 
 > [!TIP]
 > Use <kbd>Left</kbd> or <kbd>Right</kbd> arrow key to change number of participant, or use slider on the top-right corner of the page.
