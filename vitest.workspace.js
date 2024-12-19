@@ -18,8 +18,8 @@ export default defineWorkspace([
     test: {
       browser: {
         enabled: true,
-        name: 'chrome',
-        provider: 'webdriverio',
+        name: 'chromium',
+        provider: 'playwright',
         testerHtmlPath: './index.html',
         viewport: { width: 1000, height: 1200 },
         locators: {

@@ -12,7 +12,7 @@ describe('interactivity', () => {
   it('use right arrow to increate number of participant', async () => {
     const $range = page.getByPlaceholder('Generate participant')
 
-    document.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowRight' }))
+    userEvent.keyboard('{ArrowRight}')
 
     await expect.element($range).toHaveValue('6')
   })
@@ -20,8 +20,21 @@ describe('interactivity', () => {
   it('use left arrow to increate number of participant', async () => {
     const $range = page.getByPlaceholder('Generate participant')
 
-    document.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowLeft' }))
+    userEvent.keyboard('{ArrowLeft}')
 
     await expect.element($range).toHaveValue('5')
+  })
+
+  it('selected winner will proceed to next round', async () => {
+    const $party = page.getByTestId('round-0-match-1-blue-check')
+    const $target = page.getByTestId('round-1-match-3-red-name')
+
+    await expect.element($target).toHaveTextContent('Winner match 1')
+
+    await $party.click()
+
+    const $partyName = page.getByTestId('round-0-match-1-blue-name')
+
+    await expect.element($target).toHaveTextContent($partyName.element().textContent)
   })
 })

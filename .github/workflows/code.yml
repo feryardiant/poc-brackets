@@ -21,12 +21,16 @@ jobs:
           node-version: lts/*
 
       - name: Install
-        run: npm ci
+        run: |
+          npm ci
+          npx playwright install chromium
 
       - name: Lint
         run: npm run lint
 
       - name: Test
+        env:
+          COLUMN: 120
         run: npm test
 
       - name: Upload coverage to Codecov
