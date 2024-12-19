@@ -4,10 +4,10 @@
  * @property {number} matchLen
  * @property {number} roundLen
  * @property {number[]} structures
- * @property {import('../lib/parties.js').Party[]} parties
- * @property {import('../lib/matches.js').Matchup[]} matchups
- * @property {import('../lib/matches.js').Match[]} matches
- * @property {import('../lib/rounds.js').Round[]} rounds
+ * @property {?import('../lib/parties.js').Party[]} parties
+ * @property {?import('../lib/matches.js').Matchup[]} matchups
+ * @property {?import('../lib/matches.js').Match[]} matches
+ * @property {?import('../lib/rounds.js').Round[]} rounds
  */
 
 /** @type {Fixture[]} */
