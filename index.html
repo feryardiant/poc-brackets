@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tournament Bracket</title>
-  <link rel="stylesheet" href="lib/style.css">
+  <link rel="stylesheet" href="/lib/style.css">
 
   <meta property="og:title" content="Tournament Bracket" />
-  <meta property="og:url" content="https://feryardiant.id/poc-brackets/" />
+  <meta property="og:url" content="https://poc-brackets.feryardiant.id/" />
   <meta property="og:image" content="https://repository-images.githubusercontent.com/887858620/ff2f4cec-940f-482b-a86d-97a169fde164" />
   <meta property="og:description" content="My experiment and learn how to create single-elimination trounament-bracket." />
 </head>
@@ -16,7 +16,7 @@
     <div>
       <h1>Tournament Bracket</h1>
       <p id="slider-hint" aria-hidden="false">Use <kbd>Right</kbd> or <kbd>Left</kbd> arrow to change generated participants</p>
-      <p id="upload-hint" aria-hidden="true">Please download the <a href="example/participant.csv">example</a> to use upload</p>
+      <p id="upload-hint" aria-hidden="true">Please download the <a href="/example/participant.csv">example</a> to use upload</p>
     </div>
 
     <div id="options">
@@ -27,7 +27,7 @@
 
       <div id="slider" class="option" aria-describedby="#slider-hint" aria-hidden="false">
         <label for="range">Generate</label>
-        <input id="range" type="range" name="range" min="5" max="50" value="5" placeholder="Generate participant" tabindex="-1">
+        <input id="range" type="range" name="range" min="3" max="50" value="3" placeholder="Generate participant" tabindex="-1">
         <span id="value"></span>
         <span>participants</span>
       </div>
@@ -40,6 +40,6 @@
 
   <main id="chart" class="container" tabindex="-1" style="--height: 92px; --width: 180px; --gap: 1em;"></main>
 
-  <script type="module" src="main.js"></script>
+  <script type="module" src="/main.js"></script>
 </body>
 </html>
