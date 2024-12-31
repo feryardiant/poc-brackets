@@ -34,13 +34,13 @@
     "watch": "vitest --workspace=vitest.workspace.js"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.11.2",
+    "@antfu/eslint-config": "^3.12.1",
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.6.0",
     "@vitest/browser": "^2.1.8",
     "@vitest/coverage-istanbul": "^2.1.8",
     "eslint": "^9.16.0",
-    "lint-staged": "^15.2.10",
+    "lint-staged": "^15.3.0",
     "playwright": "^1.49.1",
     "simple-git-hooks": "^2.11.1",
     "standard-version": "^9.5.0",
