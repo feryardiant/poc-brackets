@@ -34,17 +34,17 @@
     "watch": "vitest --workspace=vitest.workspace.js"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.12.1",
+    "@antfu/eslint-config": "^4.1.0",
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.6.0",
-    "@vitest/browser": "^2.1.8",
-    "@vitest/coverage-istanbul": "^2.1.8",
-    "eslint": "^9.16.0",
-    "lint-staged": "^15.3.0",
-    "playwright": "^1.49.1",
+    "@vitest/browser": "^3.0.4",
+    "@vitest/coverage-istanbul": "^3.0.4",
+    "eslint": "^9.19.0",
+    "lint-staged": "^15.4.3",
+    "playwright": "^1.50.1",
     "simple-git-hooks": "^2.11.1",
     "standard-version": "^9.5.0",
-    "vitest": "^2.1.8"
+    "vitest": "^3.0.4"
   },
   "commitlint": {
     "extends": [
