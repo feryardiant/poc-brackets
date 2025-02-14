@@ -2,7 +2,7 @@
 // import { loadEnv } from 'vite'
 import { defineWorkspace } from 'vitest/config'
 
-export default defineWorkspace([
+const workspaces = [
   {
     extends: 'vitest.config.js',
     test: {
@@ -13,15 +13,24 @@ export default defineWorkspace([
       name: 'unit',
     },
   },
-  {
+]
+
+const browsers = {
+  playwright: 'chromium',
+  webdriverio: 'chrome',
+}
+
+for (const provider of ['playwright', 'webdriverio']) {
+  workspaces.push({
     extends: 'vitest.config.js',
     test: {
+      name: `browser:${provider}`,
       browser: {
         enabled: true,
+        provider,
         instances: [
-          { browser: 'chromium' },
+          { browser: browsers[provider] },
         ],
-        provider: 'playwright',
         testerHtmlPath: './index.html',
         viewport: { width: 1000, height: 1200 },
         locators: {
@@ -31,7 +40,8 @@ export default defineWorkspace([
       include: [
         'test/browser.test.js',
       ],
-      name: 'browser',
     },
-  },
-])
+  })
+}
+
+export default defineWorkspace(workspaces)
