@@ -18,7 +18,9 @@ export default defineWorkspace([
     test: {
       browser: {
         enabled: true,
-        name: 'chromium',
+        instances: [
+          { browser: 'chromium' },
+        ],
         provider: 'playwright',
         testerHtmlPath: './index.html',
         viewport: { width: 1000, height: 1200 },
