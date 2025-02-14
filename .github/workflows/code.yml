@@ -26,12 +26,12 @@ jobs:
           npx playwright install chromium --only-shell
 
       - name: Lint
-        run: npm run lint
+        run: npx eslint .
 
-      - name: Test
+      - name: Tests
         env:
           COLUMN: 120
-        run: npm test
+        run: npx vitest run --coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
