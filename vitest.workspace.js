@@ -1,5 +1,3 @@
-// import process from 'node:process'
-// import { loadEnv } from 'vite'
 import { defineWorkspace } from 'vitest/config'
 
 const workspaces = [
@@ -15,12 +13,12 @@ const workspaces = [
   },
 ]
 
-const browsers = {
+const browserProviders = {
   playwright: 'chromium',
   webdriverio: 'chrome',
 }
 
-for (const provider of ['playwright', 'webdriverio']) {
+for (const [provider, browser] of Object.entries(browserProviders)) {
   workspaces.push({
     extends: 'vitest.config.js',
     test: {
@@ -29,7 +27,7 @@ for (const provider of ['playwright', 'webdriverio']) {
         enabled: true,
         provider,
         instances: [
-          { browser: browsers[provider] },
+          { browser },
         ],
         testerHtmlPath: './index.html',
         viewport: { width: 1000, height: 1200 },
