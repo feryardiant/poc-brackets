@@ -21,4 +21,6 @@ URL: https://poc-brackets.feryardiant.id
 
 ## License
 
-This project is open-sourced software licensed under [MIT license](LICENSE.md).
+This project is open-sourced software licensed under the [AGPL v3 license](LICENSE).
+
+Copyright (C) 2025 Fery Wardiyanto
