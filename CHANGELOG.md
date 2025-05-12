@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/feryardiant/poc-brackets/compare/v0.3.0...v0.4.0) (2025-05-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* `parties.js` no longer exports `MatchSided` class and
+`rearrangePartiesBySide` method, use `Matchup` class and `matchmakingParties`
+from `matches.js` instead
+
+Signed-off-by: Fery Wardiyanto <ferywardiyanto@gmail.com>
+
+### Features
+
+* **dev:** init end-to-end tests ([#26](https://github.com/feryardiant/poc-brackets/issues/26)) ([a5a2dec](https://github.com/feryardiant/poc-brackets/commit/a5a2dec566bbb458f9a477b220830f55c7729600))
+* initiate tests ([#23](https://github.com/feryardiant/poc-brackets/issues/23)) ([2b07fae](https://github.com/feryardiant/poc-brackets/commit/2b07faee8d1e2c6696997a9a198d21f10e15b473))
+* make use of nesting css ([#22](https://github.com/feryardiant/poc-brackets/issues/22)) ([dda57b8](https://github.com/feryardiant/poc-brackets/commit/dda57b860f8ed6eade01e0d124e6c06a3631e05e))
+* use better terms that commonly used in a tournament ([#21](https://github.com/feryardiant/poc-brackets/issues/21)) ([511ff41](https://github.com/feryardiant/poc-brackets/commit/511ff417fa36d65fa60f176b15dbfe32fb2e91a6))
+
+
+### Bug Fixes
+
+* **demo:** fix issue on upload example `.csv` file ([#25](https://github.com/feryardiant/poc-brackets/issues/25)) ([9cd48bc](https://github.com/feryardiant/poc-brackets/commit/9cd48bc92317191063fe95f5ac7e1294d62d9cae))
+* fix missing type definition due to b06eff0 ([738420e](https://github.com/feryardiant/poc-brackets/commit/738420e28ea3d31391a13db902fc895297710496))
+
+
+* move and rename methods ([b06eff0](https://github.com/feryardiant/poc-brackets/commit/b06eff073d201268634bba7f2819ca8dd71e628c))
+
 ## [0.3.0](https://github.com/feryardiant/poc-brackets/compare/v0.2.1...v0.3.0) (2024-12-09)
 
 
