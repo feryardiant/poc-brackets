@@ -36,8 +36,8 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^5.0.0",
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@vitest/browser": "^3.1.4",
     "@vitest/coverage-istanbul": "^3.1.4",
     "eslint": "^9.28.0",
