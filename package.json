@@ -35,7 +35,7 @@
     "watch": "vitest --workspace=vitest.workspace.js"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^6.2.0",
+    "@antfu/eslint-config": "^7.2.0",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@vitest/browser": "^4.0.6",
