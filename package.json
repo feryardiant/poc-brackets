@@ -28,29 +28,39 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "postinstall": "simple-git-hooks",
-    "release": "standard-version -s",
-    "test": "vitest run --workspace=vitest.workspace.js --coverage",
-    "test:browser": "npm test -- --project browser",
-    "test:unit": "npm test -- --project unit",
-    "watch": "vitest --workspace=vitest.workspace.js"
+    "release": "commit-and-tag-version -s",
+    "test": "vitest run",
+    "test:browser": "pnpm test --project browser",
+    "test:unit": "pnpm test --project unit",
+    "watch": "vitest"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^7.2.0",
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
-    "@vitest/browser": "^4.0.6",
-    "@vitest/coverage-istanbul": "^4.0.6",
-    "eslint": "^10.0.2",
-    "lint-staged": "^16.1.0",
-    "playwright": "^1.52.0",
-    "simple-git-hooks": "^2.13.0",
-    "standard-version": "^9.5.0",
-    "vitest": "^4.0.6",
-    "webdriverio": "^9.15.0"
+    "@antfu/eslint-config": "^7.7.3",
+    "@commitlint/cli": "^21.0.1",
+    "@commitlint/config-conventional": "^21.0.1",
+    "@vitest/browser": "^4.1.7",
+    "@vitest/browser-playwright": "^4.1.7",
+    "@vitest/browser-webdriverio": "^4.1.7",
+    "@vitest/coverage-istanbul": "^4.1.7",
+    "@vitest/coverage-v8": "4.1.7",
+    "commit-and-tag-version": "^12.7.3",
+    "eslint": "^10.4.0",
+    "lint-staged": "^17.0.5",
+    "playwright": "^1.60.0",
+    "simple-git-hooks": "^2.13.1",
+    "vitest": "^4.1.7",
+    "webdriverio": "^9.27.1"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
+    ]
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "simple-git-hooks",
+      "edgedriver",
+      "geckodriver"
     ]
   },
   "simple-git-hooks": {
@@ -62,5 +72,5 @@
       "eslint --fix"
     ]
   },
-  "standard-version": {}
+  "commit-and-tag-version": {}
 }
