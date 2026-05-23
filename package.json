@@ -32,7 +32,7 @@
     "test": "vitest run",
     "test:unit": "vitest run --project unit",
     "test:playwright": "vitest run --project browser:playwright",
-    "test:webdriverio": "vitest run --project browser:webdriverio",
+    "test:webdriverio": "WDIO=1 vitest run --project browser:webdriverio",
     "watch": "vitest"
   },
   "devDependencies": {

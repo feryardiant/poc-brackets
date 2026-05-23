@@ -34,15 +34,15 @@ if (process.env.GITHUB_ACTIONS === 'true') {
 const providers = [
   {
     name: 'playwright',
+    enabled: true,
     factory: () => playwright(),
     browser: 'chromium',
   },
   {
     name: 'webdriverio',
-    factory: () => webdriverio({
-      capabilities: { browserVersion: '148' },
-    }),
-    browser: 'chrome',
+    enabled: 'WDIO' in process.env,
+    factory: () => webdriverio(),
+    browser: 'edge',
   },
 ]
 
@@ -55,8 +55,7 @@ for (const provider of providers) {
       ],
       browser: {
         provider: provider.factory(),
-        enabled: true,
-        // headless: true,
+        enabled: provider.enabled,
         instances: [
           { browser: provider.browser },
         ],
