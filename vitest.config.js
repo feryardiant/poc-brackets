@@ -1,8 +1,10 @@
+/// <reference types="vitest/config" />
+
 import { playwright } from '@vitest/browser-playwright'
 import { webdriverio } from '@vitest/browser-webdriverio'
 import { defineConfig } from 'vitest/config'
 
-/** @type {import('vitest/config').TestUserConfig['projects']} */
+/** @type {import('vitest/config').TestProjectConfiguration[]} */
 const projects = [
   {
     test: {
