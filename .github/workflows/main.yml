@@ -75,6 +75,17 @@ jobs:
           cache: true
           run_install: true
 
+      - name: Get playwright version
+        id: playwright
+        run: echo "version=$(pnpm info playwright --json | jq -r '.version')" >> $GITHUB_ENV
+
+      - name: Setup playwright cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: pnpm-playwright${{ steps.playwright.outputs.version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: pnpm-playwright${{ steps.playwright.outputs.version }}-
+
       - name: Setup playwright
         run: pnpx playwright install chromium --only-shell
 
