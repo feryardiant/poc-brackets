@@ -1,8 +1,8 @@
 'use strict'
 // @vitest-environment jsdom
 
-import { page, userEvent } from '@vitest/browser/context'
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { page, userEvent } from 'vitest/browser'
 import { fixtures } from './fixtures'
 
 for (const fixture of fixtures) {
@@ -32,7 +32,7 @@ describe('interactivity', () => {
   it('use right arrow to increate number of participant', async () => {
     const $range = page.getByPlaceholder('Generate participant')
 
-    userEvent.keyboard('{ArrowRight}')
+    await userEvent.keyboard('{ArrowRight}')
 
     await expect.element($range).toHaveValue('4')
   })
@@ -40,7 +40,7 @@ describe('interactivity', () => {
   it('use left arrow to increate number of participant', async () => {
     const $range = page.getByPlaceholder('Generate participant')
 
-    userEvent.keyboard('{ArrowLeft}')
+    await userEvent.keyboard('{ArrowLeft}')
 
     await expect.element($range).toHaveValue('3')
   })

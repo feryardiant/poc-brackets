@@ -2,44 +2,55 @@
 # --------------------------
 Thumbs.db
 Desktop.ini
-.directory
 .DS_Store
+.directory
 ._*
-*.cache
-*.crt
-*.log
+*.DS_Store
 *.old
-*.key
-*.pem
+*.log
 *.tmp
-*.zip
+
+# caches
+.cache
+*.cache
+*.tsbuildinfo
 *~
 
-# Development files
-# --------------------------
-.php-version
-.tool-versions
-coverage
-*.junit.xml
-junit.xml
-lcov.info
-
-# Dependency folders
-# --------------------------
-bun.lockb
-deno.lock
-node_modules
-# package-lock.json
-pnpm-lock.yaml
-vendor
-yarn.lock
+# distribution
+dist
+*.mo
+*.zip
 
 # IDE Project Configurations
 # --------------------------
+nbproject
 .idea
 .settings
+.vscode
 .project
+.zed
 *.sublime-*
+
+# AI Agents
+# --------------------------
+.agents
+.antigravitycli
+.gemini
+conductor
+GEMINI.md
+
+# Development
+# --------------------------
+.tool-versions
+
+# Other package managers
+node_modules
+vendor
+bun.lockb
+deno.lock
+package-lock.json
+# pnpm-lock.yaml
+yarn.lock
 
 # But Keep these
 # --------------------------
