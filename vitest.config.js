@@ -2,7 +2,7 @@ import { playwright } from '@vitest/browser-playwright'
 import { webdriverio } from '@vitest/browser-webdriverio'
 import { defineConfig } from 'vitest/config'
 
-/** @type {import('vitest/config').TestProjectConfiguration[]} */
+/** @type {import('vitest/config').TestUserConfig['projects']} */
 const projects = [
   {
     test: {
@@ -12,6 +12,22 @@ const projects = [
     },
   },
 ]
+
+/** @type {import('vitest/config').TestUserConfig['reporters']} */
+const reporters = [
+  'default',
+  [
+    'junit',
+    {
+      suiteName: 'poc-brackets test suites',
+      outputFile: 'test/reports/junit.xml',
+    },
+  ],
+]
+
+if (process.env.GITHUB_ACTIONS === 'true') {
+  reporters.push('github-actions')
+}
 
 const providers = [
   {
@@ -57,11 +73,9 @@ export default defineConfig({
     projects,
     coverage: {
       provider: 'istanbul',
-      reportsDirectory: 'test/reports',
+      include: ['lib/*.js', 'main.js'],
+      reportsDirectory: 'test/reports/coverage',
     },
-    reporters: [
-      'default',
-      ['junit', { outputFile: 'test/reports/junit.xml' }],
-    ],
+    reporters,
   },
 })
