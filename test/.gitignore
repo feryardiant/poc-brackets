@@ -1,0 +1,4 @@
+reports
+*.junit.xml
+junit.xml
+lcov.info

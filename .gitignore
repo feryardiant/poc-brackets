@@ -41,12 +41,7 @@ GEMINI.md
 
 # Development
 # --------------------------
-.php-version
 .tool-versions
-*.junit.xml
-coverage
-junit.xml
-lcov.info
 
 # Other package managers
 node_modules

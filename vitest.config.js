@@ -2,20 +2,13 @@ import { playwright } from '@vitest/browser-playwright'
 import { webdriverio } from '@vitest/browser-webdriverio'
 import { defineConfig } from 'vitest/config'
 
-/** @type {import('vitest').ProjectConfig[]} */
+/** @type {import('vitest/config').TestProjectConfiguration[]} */
 const projects = [
   {
     test: {
       name: 'unit',
       include: ['test/unit.test.js'],
       environment: 'node',
-      coverage: {
-        provider: 'istanbul',
-      },
-      reporters: [
-        'default',
-        ['junit', { outputFile: 'reports.junit.xml' }],
-      ],
     },
   },
 ]
@@ -39,6 +32,9 @@ for (const provider of providers) {
   projects.push({
     test: {
       name: `browser:${provider.name}`,
+      include: [
+        'test/browser.test.js',
+      ],
       browser: {
         provider: provider.factory(),
         enabled: true,
@@ -52,13 +48,20 @@ for (const provider of providers) {
           testIdAttribute: 'id',
         },
       },
-      include: [
-        'test/browser.test.js',
-      ],
     },
   })
 }
 
 export default defineConfig({
-  test: { projects },
+  test: {
+    projects,
+    coverage: {
+      provider: 'istanbul',
+      reportsDirectory: 'test/reports',
+    },
+    reporters: [
+      'default',
+      ['junit', { outputFile: 'test/reports/junit.xml' }],
+    ],
+  },
 })

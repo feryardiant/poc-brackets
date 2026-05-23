@@ -95,21 +95,19 @@ function parseCsv(csv) {
   const returns = []
   const heading = []
 
-  return csv.split('\n').reduce((returns, line, i) => {
+  return csv.split('\n').reduce((returns, line, order) => {
     if (line === '') {
       return returns
     }
 
     const columns = line.split(',').map(col => col.trim())
 
-    if (i === 0) {
+    if (order === 0) {
       heading.push(...columns)
       return returns
     }
 
-    const obj = {
-      order: i,
-    }
+    const obj = { order }
 
     columns.forEach((col, i) => {
       obj[heading[i]] = /^\d$/.test(col) ? Number(col) : col
