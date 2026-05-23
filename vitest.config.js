@@ -38,7 +38,7 @@ for (const provider of providers) {
       browser: {
         provider: provider.factory(),
         enabled: true,
-        headless: false,
+        headless: true,
         instances: [
           { browser: provider.browser },
         ],
