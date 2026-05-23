@@ -60,8 +60,8 @@ jobs:
           directory: test/reports
           report_type: test_results
 
-  browser:
-    name: Browser Test
+  playwright:
+    name: Browser Test [playwright]
     needs: lint
     runs-on: ubuntu-latest
 
@@ -74,6 +74,9 @@ jobs:
         with:
           cache: true
           run_install: true
+
+      - name: Setup playwright
+        run: pnpx playwright install chromium --only-shell
 
       - name: Test
         env:
