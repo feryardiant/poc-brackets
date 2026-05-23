@@ -1,5 +1,4 @@
 'use strict'
-// @vitest-environment jsdom
 
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { page, userEvent } from 'vitest/browser'

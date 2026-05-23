@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "types": [
-      "@vitest/browser-playwright"
+      "vitest/jsdom"
     ]
   }
 }
