@@ -80,7 +80,7 @@ jobs:
         run: echo "version=$(pnpm info playwright --json | jq -r '.version')" >> $GITHUB_ENV
 
       - name: Setup playwright cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: pnpm-playwright${{ steps.playwright.outputs.version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
