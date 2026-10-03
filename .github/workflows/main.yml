@@ -77,7 +77,7 @@ jobs:
 
       - name: Get playwright version
         id: playwright
-        run: echo "version=$(pnpm info playwright --json | jq -r '.version')" >> $GITHUB_ENV
+        run: echo "version=$(node -p "require('./node_modules/playwright/package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Setup playwright cache
         uses: actions/cache@v6
@@ -87,7 +87,7 @@ jobs:
           restore-keys: pnpm-playwright${{ steps.playwright.outputs.version }}-
 
       - name: Setup playwright
-        run: pnpx playwright install chromium --only-shell
+        run: pnpm exec playwright install chromium --with-deps --only-shell
 
       - name: Test
         env:
