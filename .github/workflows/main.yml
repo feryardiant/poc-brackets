@@ -87,7 +87,7 @@ jobs:
           restore-keys: pnpm-playwright${{ steps.playwright.outputs.version }}-
 
       - name: Setup playwright
-        run: pnpx playwright install chromium --only-shell
+        run: pnpm exec playwright install chromium --only-shell
 
       - name: Test
         env:
