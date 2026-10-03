@@ -36,17 +36,17 @@
     "watch": "vitest"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^9.1.0",
-    "@commitlint/cli": "^21.1.0",
-    "@commitlint/config-conventional": "^21.1.0",
-    "@vitest/browser-playwright": "^4.1.9",
-    "@vitest/browser-webdriverio": "^4.1.9",
-    "@vitest/coverage-istanbul": "^4.1.9",
-    "commit-and-tag-version": "^12.7.3",
-    "eslint": "^10.5.0",
-    "lint-staged": "^17.0.8",
-    "simple-git-hooks": "^2.13.1",
-    "vitest": "^4.1.9"
+    "@antfu/eslint-config": "^9.5.1",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "@vitest/browser-playwright": "^5.0.3",
+    "@vitest/browser-webdriverio": "^5.0.0",
+    "@vitest/coverage-istanbul": "^5.0.3",
+    "commit-and-tag-version": "^13.2.1",
+    "eslint": "^10.12.0",
+    "lint-staged": "^17.6.0",
+    "simple-git-hooks": "^2.14.0",
+    "vitest": "^5.0.3"
   },
   "commitlint": {
     "extends": [
