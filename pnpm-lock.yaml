@@ -6,7 +6,6 @@ settings:
 
 overrides:
   '@typescript-eslint/eslint-plugin': 8.71.0
-  playwright: 1.61.1
 
 importers:
 
@@ -39,6 +38,9 @@ importers:
       lint-staged:
         specifier: ^17.6.0
         version: 17.6.0
+      playwright:
+        specifier: ^1.64.0
+        version: 1.64.0
       simple-git-hooks:
         specifier: ^2.14.0
         version: 2.14.0
@@ -762,7 +764,7 @@ packages:
   '@vitest/browser-playwright@5.0.3':
     resolution: {integrity: sha512-rYBHwIFL/ZtI6dl0rbrAatScXCrvX+TL2BX2AGOigkC1Y6u3rIWw8KMQJJMS4drSa1ksMCmZU2wpgwdE7kqu3g==}
     peerDependencies:
-      playwright: 1.61.1
+      playwright: '*'
       vitest: 5.0.3
 
   '@vitest/browser-webdriverio@5.0.0':
